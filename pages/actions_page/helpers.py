@@ -1,5 +1,5 @@
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
+
 
 from .locators import (
     ADD_ACTION_BUTTON,
@@ -28,20 +28,9 @@ def add_issue(driver, desired_issue):
     issue.click()
 
 
-def add_label(driver, desired_label):
-    label_input = wait_for_element_to_be_visible(driver, LABEL_INPUT)
-    label_input.send_keys(desired_label)
-
-    label = wait_for_element_to_be_visible(driver, label_by_label_text(desired_label))
-    label.click()
 
 
-def add_linked_item(driver, query_text, desired_linked_item):
-    linked_item_input = wait_for_element_to_be_visible(driver, LINKED_ITEM_INPUT)
-    linked_item_input.send_keys(query_text)
 
-    linked_item = wait_for_element_to_be_visible(driver, linked_item_by_linked_item_text(desired_linked_item))
-    linked_item.click()
 
 
 def add_summary(driver, desired_summary):
@@ -63,11 +52,6 @@ def click_save_button(driver):
 
 
 
-def enter_end_time(driver, desired_end_time):
-    end_time = wait_for_element_to_be_visible(driver, END_TIME)
-    end_time.clear()
-    end_time.send_keys(desired_end_time)
-    end_time.send_keys(Keys.ENTER)
 
 
 def enter_start_date(driver, desired_start_date):
@@ -83,6 +67,3 @@ def enter_start_time(driver, desired_start_time):
     start_time.send_keys(Keys.ENTER)
 
 
-def set_action_type(driver, desired_action_type):
-    select_action_type = Select(wait_for_element_to_be_visible(driver, SELECT_ACTION_TYPE))
-    select_action_type.select_by_visible_text(desired_action_type)

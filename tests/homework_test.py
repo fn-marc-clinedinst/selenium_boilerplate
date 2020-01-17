@@ -6,12 +6,8 @@ from selenium.webdriver.common.by import By
 
 from pages.actions_page.helpers import (
     add_issue,
-    add_label,
-    add_linked_item,
     add_summary,
     click_save_button,
-    enter_end_time,
-    set_action_type
 )
 from utilities.wait import wait_for_element_to_be_visible
 
@@ -129,13 +125,10 @@ def test_user_can_create_a_new_action(driver):
     actions_page.enter_start_date('8/14/2019')
     actions_page.enter_start_time('6:00am')
     actions_page.enter_end_date('8/14/2019')
-
-    enter_end_time(driver, '5:00pm')
-    set_action_type(driver, 'Phone Call')
-    add_linked_item(driver, 'US HR 1478', 'US - HR 1478')
-
-    for label in ['agriculture', 'Farming', 'welfare']:
-        add_label(driver, label)
+    actions_page.enter_end_time('5:00pm')
+    actions_page.set_action_type('Phone Call')
+    actions_page.add_linked_item('US HR 1478', 'US - HR 1478')
+    actions_page.add_labels(['agriculture', 'Farming', 'welfare'])
 
     add_issue(driver, 'Agriculture')
 
