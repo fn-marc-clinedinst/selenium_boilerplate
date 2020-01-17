@@ -9,6 +9,11 @@ class ActionsPage(BasePage):
         add_action_button = self.find_visible_element(locators.ADD_ACTION_BUTTON)
         add_action_button.click()
 
+    def enter_end_date(self, desired_end_date):
+        end_date = self.find_visible_element(locators.END_DATE)
+        end_date.send_keys(Keys.ENTER)
+        end_date.send_keys(desired_end_date)
+
     def enter_start_date(self, desired_start_date):
         start_date = self.find_visible_element(locators.START_DATE)
         start_date.send_keys(Keys.ENTER)

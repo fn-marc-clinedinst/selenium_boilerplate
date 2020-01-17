@@ -9,12 +9,8 @@ from pages.actions_page.helpers import (
     add_label,
     add_linked_item,
     add_summary,
-    click_add_action_button,
     click_save_button,
-    enter_end_date,
     enter_end_time,
-    enter_start_date,
-    enter_start_time,
     set_action_type
 )
 from utilities.wait import wait_for_element_to_be_visible
@@ -115,10 +111,10 @@ def test_user_can_create_a_new_action(driver):
     click_here_to_log_in_button.click()
 
     email_input = wait_for_element_to_be_visible(driver, EMAIL_INPUT)
-    email_input.send_keys('not_my_real_email')
+    email_input.send_keys('')
 
     password_input = wait_for_element_to_be_visible(driver, PASSWORD_INPUT)
-    password_input.send_keys('not_my_real_password')
+    password_input.send_keys('')
 
     login_button = wait_for_element_to_be_visible(driver, LOGIN_BUTTON)
     login_button.click()
@@ -127,12 +123,13 @@ def test_user_can_create_a_new_action(driver):
     assert 'Welcome' in welcome_message.text
 
     actions_page = ActionsPage(driver)
+
     actions_page.navigate()
     actions_page.click_add_action_button()
     actions_page.enter_start_date('8/14/2019')
     actions_page.enter_start_time('6:00am')
+    actions_page.enter_end_date('8/14/2019')
 
-    enter_end_date(driver, '8/14/2019')
     enter_end_time(driver, '5:00pm')
     set_action_type(driver, 'Phone Call')
     add_linked_item(driver, 'US HR 1478', 'US - HR 1478')

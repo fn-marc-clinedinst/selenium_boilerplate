@@ -60,10 +60,7 @@ def click_save_button(driver):
     save_button.click()
 
 
-def enter_end_date(driver, desired_end_date):
-    end_date = wait_for_element_to_be_visible(driver, END_DATE)
-    end_date.send_keys(Keys.ENTER)
-    end_date.send_keys(desired_end_date)
+
 
 
 def enter_end_time(driver, desired_end_time):
