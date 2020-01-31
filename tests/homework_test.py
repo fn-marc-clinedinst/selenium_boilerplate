@@ -38,24 +38,11 @@ WELCOME_MESSAGE = {
 }
 
 # New
-ACTION_TYPE_DROPDOWN = {
-    'by': By.CSS_SELECTOR,
-    'value': '.action-type'
-}
 
-ACTION_TYPE_OPTION = {
-    'by': By.XPATH,
-    'value': '//option[text()="Committee Hearing"]'
-}
 
 CONFIRMATION_MODAL_OKAY_BUTTON = {
     'by': By.CSS_SELECTOR,
     'value': '.modal-footer .btn-success'
-}
-
-NEW_ACTION_SUMMARY = {
-    'by': By.XPATH,
-    'value': '//td[contains(@class, "actions-row__summary-col")]//p[text()="This is some unique text."]'
 }
 
 
@@ -63,13 +50,6 @@ def delete_icon_by_action_summary(action_summary):
     return {
         'by': By.XPATH,
         'value': f'//p[text()="{action_summary}"]//ancestor::tr//i[@class="ion-trash-b"]'
-    }
-
-
-def label_by_label_text(label_text):
-    return {
-        'by': By.XPATH,
-        'value': f'//div[@class="label-selection__wrapper"]//li//a[contains(string(), "{label_text}")]'
     }
 
 
@@ -107,10 +87,10 @@ def test_user_can_create_a_new_action(driver):
     click_here_to_log_in_button.click()
 
     email_input = wait_for_element_to_be_visible(driver, EMAIL_INPUT)
-    email_input.send_keys('')
+    email_input.send_keys('marc.clinedinst+segmentation@fiscalnote.com')
 
     password_input = wait_for_element_to_be_visible(driver, PASSWORD_INPUT)
-    password_input.send_keys('')
+    password_input.send_keys('not_my_real_password')
 
     login_button = wait_for_element_to_be_visible(driver, LOGIN_BUTTON)
     login_button.click()
@@ -128,7 +108,7 @@ def test_user_can_create_a_new_action(driver):
     actions_page.enter_end_time('5:00pm')
     actions_page.set_action_type('Phone Call')
     actions_page.add_linked_item('US HR 1478', 'US - HR 1478')
-    actions_page.add_labels(['agriculture', 'Farming', 'welfare'])
+    actions_page.add_labels(('agriculture', 'Farming', 'welfare'))
 
     add_issue(driver, 'Agriculture')
 
