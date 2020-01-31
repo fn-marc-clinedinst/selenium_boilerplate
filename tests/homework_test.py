@@ -4,44 +4,20 @@ from datetime import datetime
 from random import choice
 from selenium.webdriver.common.by import By
 
-from pages.actions_page.helpers import (
-    add_issue,
-    add_summary,
-    click_save_button,
-)
+from pages.actions_page.page_object import ActionsPage
+from pages.login_page.page_object import LoginPage
 from utilities.wait import wait_for_element_to_be_visible
 
-
-CLICK_HERE_TO_LOG_IN_BUTTON = {
-    'by': By.CSS_SELECTOR,
-    'value': '.sign-in-form button'
-}
 
 CONFIRMATION_MODAL_OKAY_BUTTON = {
     'by': By.CSS_SELECTOR,
     'value': '.modal-footer .btn-success'
 }
 
-EMAIL_INPUT = {
-    'by': By.NAME,
-    'value': 'email'
-}
-
-LOGIN_BUTTON = {
-    'by': By.CLASS_NAME,
-    'value': 'auth0-lock-submit'
-}
-
-PASSWORD_INPUT = {
-    'by': By.NAME,
-    'value': 'password'
-}
-
 WELCOME_MESSAGE = {
     'by': By.CSS_SELECTOR,
     'value': 'h1'
 }
-
 
 
 def delete_icon_by_action_summary(action_summary):
@@ -74,27 +50,10 @@ def get_timestamp():
     return f'{date.hour}:{date.minute}:{date.second}'
 
 
-from pages.actions_page.page_object import ActionsPage
-
-
 @pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
-    driver.get('https://staging.fiscalnote.com/?error=notauthorized')
-
-    click_here_to_log_in_button = wait_for_element_to_be_visible(driver, CLICK_HERE_TO_LOG_IN_BUTTON)
-    click_here_to_log_in_button.click()
-
-    email_input = wait_for_element_to_be_visible(driver, EMAIL_INPUT)
-    email_input.send_keys('marc.clinedinst+segmentation@fiscalnote.com')
-
-    password_input = wait_for_element_to_be_visible(driver, PASSWORD_INPUT)
-    password_input.send_keys('not_my_real_password')
-
-    login_button = wait_for_element_to_be_visible(driver, LOGIN_BUTTON)
-    login_button.click()
-
-    welcome_message = wait_for_element_to_be_visible(driver, WELCOME_MESSAGE)
-    assert 'Welcome' in welcome_message.text
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     actions_page = ActionsPage(driver)
 
@@ -107,13 +66,12 @@ def test_user_can_create_a_new_action(driver):
     actions_page.set_action_type('Phone Call')
     actions_page.add_linked_item('US HR 1478', 'US - HR 1478')
     actions_page.add_labels(('agriculture', 'Farming', 'welfare'))
-
-    add_issue(driver, 'Agriculture')
+    actions_page.add_issue('Agriculture')
 
     action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
-    add_summary(driver, action_summary_text)
+    actions_page.add_summary(action_summary_text)
 
-    click_save_button(driver)
+    actions_page.click_save_button()
 
     new_action = wait_for_element_to_be_visible(driver, new_action_summary(action_summary_text))
     assert new_action.is_displayed()

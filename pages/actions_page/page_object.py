@@ -6,6 +6,13 @@ from pages.base_page import BasePage
 
 
 class ActionsPage(BasePage):
+    def add_issue(self, desired_issue):
+        issue_input = self.find_visible_element(locators.ISSUE_INPUT)
+        issue_input.send_keys(desired_issue)
+
+        issue = self.find_visible_element(locators.issue_by_issue_text(desired_issue))
+        issue.click()
+
     def add_label(self, desired_label):
         label_input = self.find_visible_element(locators.LABEL_INPUT)
         label_input.send_keys(desired_label)
@@ -24,9 +31,18 @@ class ActionsPage(BasePage):
         linked_item = self.find_visible_element(locators.linked_item_by_linked_item_text(desired_linked_item))
         linked_item.click()
 
+    def add_summary(self, desired_summary):
+        summary_section = self.find_visible_element(locators.SUMMARY_SECTION)
+        summary_section.clear()
+        summary_section.send_keys(desired_summary)
+
     def click_add_action_button(self):
         add_action_button = self.find_visible_element(locators.ADD_ACTION_BUTTON)
         add_action_button.click()
+
+    def click_save_button(self):
+        save_button = self.find_visible_element(locators.SAVE_BUTTON)
+        save_button.click()
 
     def enter_end_date(self, desired_end_date):
         end_date = self.find_visible_element(locators.END_DATE)
