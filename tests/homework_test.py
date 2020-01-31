@@ -17,6 +17,11 @@ CLICK_HERE_TO_LOG_IN_BUTTON = {
     'value': '.sign-in-form button'
 }
 
+CONFIRMATION_MODAL_OKAY_BUTTON = {
+    'by': By.CSS_SELECTOR,
+    'value': '.modal-footer .btn-success'
+}
+
 EMAIL_INPUT = {
     'by': By.NAME,
     'value': 'email'
@@ -37,13 +42,6 @@ WELCOME_MESSAGE = {
     'value': 'h1'
 }
 
-# New
-
-
-CONFIRMATION_MODAL_OKAY_BUTTON = {
-    'by': By.CSS_SELECTOR,
-    'value': '.modal-footer .btn-success'
-}
 
 
 def delete_icon_by_action_summary(action_summary):
