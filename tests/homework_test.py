@@ -56,8 +56,8 @@ def test_user_can_create_a_new_action(driver):
     login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     actions_page = ActionsPage(driver)
-
     actions_page.navigate()
+
     actions_page.click_add_action_button()
     actions_page.enter_start_date('8/14/2019')
     actions_page.enter_start_time('6:00am')
