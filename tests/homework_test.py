@@ -54,7 +54,7 @@ def get_timestamp():
 @pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'Bigtwi2020!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     welcome_message = wait_for_element_to_be_visible(driver, WELCOME_MESSAGE)
     assert "Welcome" in welcome_message.text
