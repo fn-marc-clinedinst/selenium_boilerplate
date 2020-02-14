@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-WELCOME_MESSAGE = {
+OK_BUTTON = {
     'by': By.CSS_SELECTOR,
-    'value': 'h1'
+    'value': '.modal-footer .btn-success'
 }
