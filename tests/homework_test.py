@@ -4,6 +4,7 @@ from datetime import datetime
 from random import choice
 from selenium.webdriver.common.by import By
 
+from pages.action_modal.page_object import ActionModal
 from pages.actions_page.page_object import ActionsPage
 from pages.login_page.page_object import LoginPage
 from utilities.wait import wait_for_element_to_be_visible
@@ -53,25 +54,29 @@ def get_timestamp():
 @pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+    login_page.login('selenium.course@fiscalnote.com', 'Bigtwi2020!')
+
+    welcome_message = wait_for_element_to_be_visible(driver, WELCOME_MESSAGE)
+    assert "Welcome" in welcome_message.text
 
     actions_page = ActionsPage(driver)
     actions_page.navigate()
-
     actions_page.click_add_action_button()
-    actions_page.enter_start_date('8/14/2019')
-    actions_page.enter_start_time('6:00am')
-    actions_page.enter_end_date('8/14/2019')
-    actions_page.enter_end_time('5:00pm')
-    actions_page.set_action_type('Phone Call')
-    actions_page.add_linked_item('US HR 1478', 'US - HR 1478')
-    actions_page.add_labels(('agriculture', 'Farming', 'welfare'))
-    actions_page.add_issue('Agriculture')
+
+    action_modal = ActionModal(driver)
+    action_modal.enter_start_date('8/14/2019')
+    action_modal.enter_start_time('6:00am')
+    action_modal.enter_end_date('8/14/2019')
+    action_modal.enter_end_time('5:00pm')
+    action_modal.set_action_type('Phone Call')
+    action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
+    action_modal.add_labels(('agriculture', 'Farming', 'welfare'))
+    action_modal.add_issue('Agriculture')
 
     action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
-    actions_page.add_summary(action_summary_text)
+    action_modal.add_summary(action_summary_text)
 
-    actions_page.click_save_button()
+    action_modal.click_save_button()
 
     new_action = wait_for_element_to_be_visible(driver, new_action_summary(action_summary_text))
     assert new_action.is_displayed()
