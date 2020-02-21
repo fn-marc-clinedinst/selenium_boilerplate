@@ -25,6 +25,11 @@ LINKED_ITEM_INPUT = {
     'value': 'linked-items-selectize-selectized'
 }
 
+MODAL_HEADER = {
+    'by': By.CLASS_NAME,
+    'value': 'modal-title'
+}
+
 SAVE_BUTTON = {
     'by': By.CSS_SELECTOR,
     'value': '.actions-modal__footer button[type="submit"]'

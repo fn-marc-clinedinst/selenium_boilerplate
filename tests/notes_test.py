@@ -31,6 +31,11 @@ WELCOME_MESSAGE = {
     'value': 'h1'
 }
 
+FIRST_NOTE_CHECKBOX = {
+    'by': By.XPATH,
+    'value': '(//td[@class="notes-row__checkbox-col"])[1]//a'
+}
+
 
 @pytest.mark.notes
 def test_notes(driver):
@@ -40,17 +45,20 @@ def test_notes(driver):
     click_here_to_log_in_button.click()
 
     email_input = wait_for_element_to_be_visible(driver, EMAIL_INPUT)
-    email_input.send_keys('fiscalnote.aft.premium@gmail.com')
+    email_input.send_keys('some_username')
 
     password_input = wait_for_element_to_be_visible(driver, PASSWORD_INPUT)
-    password_input.send_keys('not_my_real_password')
+    password_input.send_keys('some_password')
 
     login_button = wait_for_element_to_be_visible(driver, LOG_IN_BUTTON)
     login_button.click()
 
     welcome_message = wait_for_element_to_be_visible(driver, WELCOME_MESSAGE)
-    assert 'Welcome, FiscalNote' in welcome_message.text
+    assert 'Welcome' in welcome_message.text
 
     driver.get('https://staging.fiscalnote.com/notes')
+
+    first_note_checkbox = wait_for_element_to_be_visible(driver, FIRST_NOTE_CHECKBOX)
+    first_note_checkbox.click()
 
     sleep(5)

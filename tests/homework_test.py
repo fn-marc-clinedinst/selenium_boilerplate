@@ -3,6 +3,7 @@ import pytest
 from datetime import datetime
 from random import choice
 from selenium.webdriver.common.by import By
+from time import sleep
 
 from pages.actions_page.page_object import ActionsPage
 from pages.action_modal.page_object import ActionModal
@@ -42,7 +43,47 @@ def get_timestamp():
     return f'{date.hour}:{date.minute}:{date.second}'
 
 
+def test_action_counts_for_empty_state(driver):
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'Bigtwi2020!')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+
+    assert actions_page.total_actions_count == 0
+    assert actions_page.actions_this_week_count == 0
+    assert actions_page.actions_this_month_count == 0
+
+    assert "No actions yet." in actions_page.empty_state_help_text
+    assert "Create one to record meetings, calls, and other actions to share past and future activity with your team." in actions_page.empty_state_help_text
+
+    assert actions_page.empty_state_add_action_button.is_displayed()
+
+
 @pytest.mark.homework_solution
+def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_button(driver):
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+    actions_page.click_empty_state_add_action_button()
+
+    action_modal = ActionModal(driver)
+
+    assert action_modal.modal_header_text == "Add Action"
+
+    action_modal.enter_start_date('foobar')
+
+    assert action_modal.date_is_valid(action_modal.start_date_value) == True
+
+
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
     login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')

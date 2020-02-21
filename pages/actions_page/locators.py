@@ -5,6 +5,16 @@ ADD_ACTION_BUTTON = {
     'value': '//button[text()="+ Add"]'
 }
 
+EMPTY_STATE_ADD_ACTION_BUTTON = {
+    'by': By.CSS_SELECTOR,
+    'value': '.actions-search__empty-content button'
+}
+
+EMPTY_STATE_HELP_TEXT = {
+    'by': By.CSS_SELECTOR,
+    'value': '.actions-search__empty-content h5'
+}
+
 
 def action_count_by_description(description):
     return {

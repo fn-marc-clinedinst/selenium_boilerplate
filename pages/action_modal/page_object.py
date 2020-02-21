@@ -1,3 +1,4 @@
+from datetime import datetime
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
@@ -6,6 +7,22 @@ from pages.base_page import BasePage
 
 
 class ActionModal(BasePage):
+    def date_is_valid(self, date):
+        try:
+            datetime.strptime(date, "%m/%d/%Y")
+
+            return True
+        except ValueError:
+            return f'{date} is not a valid date.'
+
+    @property
+    def start_date_value(self):
+        return self.find_visible_element(locators.START_DATE).get_attribute('value')
+
+    @property
+    def modal_header_text(self):
+        return self.find_visible_element(locators.MODAL_HEADER).text
+
     def add_issue(self, desired_issue):
         issue_input = self.find_visible_element(locators.ISSUE_INPUT)
         issue_input.send_keys(desired_issue)
