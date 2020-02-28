@@ -3,13 +3,13 @@ import pytest
 from datetime import datetime
 from random import choice
 from selenium.webdriver.common.by import By
-from time import sleep
 
 from pages.actions_page.page_object import ActionsPage
 from pages.action_modal.page_object import ActionModal
 from pages.confirmation_modal.page_object import ConfirmationModal
 from pages.home_page.page_object import HomePage
 from pages.login_page.page_object import LoginPage
+from utilities.validators import date_is_valid, time_is_valid
 from utilities.wait import wait_for_element_to_be_visible
 
 
@@ -45,7 +45,7 @@ def get_timestamp():
 
 def test_action_counts_for_empty_state(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'Bigtwi2020!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -79,9 +79,17 @@ def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_butto
 
     assert action_modal.modal_header_text == "Add Action"
 
-    action_modal.enter_start_date('foobar')
+    assert date_is_valid(action_modal.start_date_value)
 
-    assert action_modal.date_is_valid(action_modal.start_date_value) == True
+    assert time_is_valid(action_modal.start_time_value)
+
+    assert date_is_valid(action_modal.end_date_value)
+
+    assert time_is_valid(action_modal.end_time_value)
+
+    assert action_modal.selected_action_type == "Meeting"
+
+    assert action_modal.added_attendees == ['Selenium Course']
 
 
 def test_user_can_create_a_new_action(driver):

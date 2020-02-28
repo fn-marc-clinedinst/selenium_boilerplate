@@ -1,4 +1,3 @@
-from datetime import datetime
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
@@ -7,17 +6,31 @@ from pages.base_page import BasePage
 
 
 class ActionModal(BasePage):
-    def date_is_valid(self, date):
-        try:
-            datetime.strptime(date, "%m/%d/%Y")
+    @property
+    def added_attendees(self):
+        return [attendee.text.replace('\n×', '') for attendee in self.find_visible_elements(locators.ATTENDEE)]
 
-            return True
-        except ValueError:
-            return f'{date} is not a valid date.'
+    @property
+    def end_date_value(self):
+        return self.find_visible_element(locators.END_DATE).get_attribute('value')
+
+    @property
+    def end_time_value(self):
+        return self.find_visible_element(locators.END_TIME).get_attribute('value')
+
+    @property
+    def selected_action_type(self):
+        currently_selected = Select(self.find_visible_element(locators.SELECT_ACTION_TYPE)).first_selected_option
+
+        return currently_selected.text.strip()
 
     @property
     def start_date_value(self):
         return self.find_visible_element(locators.START_DATE).get_attribute('value')
+
+    @property
+    def start_time_value(self):
+        return self.find_visible_element(locators.START_TIME).get_attribute('value')
 
     @property
     def modal_header_text(self):

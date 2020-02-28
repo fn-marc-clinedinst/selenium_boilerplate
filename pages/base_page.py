@@ -1,5 +1,6 @@
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.expected_conditions import (
+    visibility_of_all_elements_located,
     visibility_of_element_located
 )
 from selenium.webdriver.support.wait import WebDriverWait
@@ -16,3 +17,11 @@ class BasePage:
             return wait.until(visibility_of_element_located((locator['by'], locator['value'])))
         except TimeoutException:
             return None
+
+    def find_visible_elements(self, locator, timeout=15):
+        try:
+            wait = WebDriverWait(self.driver, timeout)
+
+            return wait.until(visibility_of_all_elements_located((locator['by'], locator['value'])))
+        except TimeoutException:
+            return []

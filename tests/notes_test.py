@@ -36,6 +36,11 @@ FIRST_NOTE_CHECKBOX = {
     'value': '(//td[@class="notes-row__checkbox-col"])[1]//a'
 }
 
+DELETE_BUTTON = {
+    'by': By.XPATH,
+    'value': '//span[text()="Delete"]//ancestor::button'
+}
+
 
 @pytest.mark.notes
 def test_notes(driver):

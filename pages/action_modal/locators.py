@@ -1,5 +1,10 @@
 from selenium.webdriver.common.by import By
 
+ATTENDEE = {
+    'by': By.XPATH,
+    'value': '//label[text()="Attendees"]//following-sibling::div[@class="actions-modal__selectize-container"]//div[@class="option"]'
+}
+
 END_DATE = {
     'by': By.ID,
     'value': 'create-action-modal-end-date'
