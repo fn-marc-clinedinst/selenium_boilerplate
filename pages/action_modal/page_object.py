@@ -11,6 +11,22 @@ class ActionModal(BasePage):
         return [attendee.text.replace('\n×', '') for attendee in self.find_visible_elements(locators.ATTENDEE)]
 
     @property
+    def added_issues(self):
+        return [issue.text for issue in self.find_visible_elements(locators.ISSUE, timeout=3)]
+
+    @property
+    def added_labels(self):
+        return [label.text for label in self.find_visible_elements(locators.LABEL, timeout=3)]
+
+    @property
+    def added_linked_items(self):
+        return [linked_item.text.replace('\n×', '') for linked_item in self.find_visible_elements(locators.LINKED_ITEM, timeout=3)]
+
+    @property
+    def current_summary_text(self):
+        return self.find_visible_element(locators.SUMMARY_SECTION).get_attribute('value')
+
+    @property
     def end_date_value(self):
         return self.find_visible_element(locators.END_DATE).get_attribute('value')
 

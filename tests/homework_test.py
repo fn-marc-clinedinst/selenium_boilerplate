@@ -62,7 +62,6 @@ def test_action_counts_for_empty_state(driver):
 
     assert actions_page.empty_state_add_action_button.is_displayed()
 
-
 @pytest.mark.homework_solution
 def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_button(driver):
     login_page = LoginPage(driver)
@@ -90,6 +89,14 @@ def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_butto
     assert action_modal.selected_action_type == "Meeting"
 
     assert action_modal.added_attendees == ['Selenium Course']
+
+    assert action_modal.added_linked_items == []
+
+    assert action_modal.added_labels == []
+
+    assert action_modal.added_issues == []
+
+    assert action_modal.current_summary_text == ''
 
 
 def test_user_can_create_a_new_action(driver):

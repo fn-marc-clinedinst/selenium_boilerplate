@@ -15,14 +15,29 @@ END_TIME = {
     'value': 'create-action-modal-end-time'
 }
 
+ISSUE = {
+    'by': By.CSS_SELECTOR,
+    'value': '.project-selection__container .project__bubble p'
+}
+
 ISSUE_INPUT = {
     'by': By.CSS_SELECTOR,
     'value': '.project-selection__wrapper input'
 }
 
+LABEL = {
+    'by': By.CSS_SELECTOR,
+    'value': '.label-selection__container .label__bubble p'
+}
+
 LABEL_INPUT = {
     'by': By.CSS_SELECTOR,
     'value': '.label-selection__wrapper input'
+}
+
+LINKED_ITEM = {
+    'by': By.CSS_SELECTOR,
+    'value': '.search-input-container .selectize-input .option'
 }
 
 LINKED_ITEM_INPUT = {
