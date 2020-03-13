@@ -5,6 +5,16 @@ ATTENDEE = {
     'value': '//label[text()="Attendees"]//following-sibling::div[@class="actions-modal__selectize-container"]//div[@class="option"]'
 }
 
+CANCEL_BUTTON = {
+    'by': By.CSS_SELECTOR,
+    'value': '.actions-modal__footer .btn-default'
+}
+
+CLOSE_ICON = {
+    'by': By.CSS_SELECTOR,
+    'value': '.modal-header .close'
+}
+
 END_DATE = {
     'by': By.ID,
     'value': 'create-action-modal-end-date'

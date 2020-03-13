@@ -62,8 +62,12 @@ def test_action_counts_for_empty_state(driver):
 
     assert actions_page.empty_state_add_action_button.is_displayed()
 
-@pytest.mark.homework_solution
-def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_button(driver):
+
+def test_user_sees_correct_default_state_for_action_modal(driver):
+    pass
+
+
+def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(driver):
     login_page = LoginPage(driver)
     login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
@@ -75,6 +79,8 @@ def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_butto
     actions_page.click_empty_state_add_action_button()
 
     action_modal = ActionModal(driver)
+
+    assert action_modal.is_displayed
 
     assert action_modal.modal_header_text == "Add Action"
 
@@ -97,6 +103,46 @@ def test_user_can_open_and_close_actions_modal_with_empty_state_add_action_butto
     assert action_modal.added_issues == []
 
     assert action_modal.current_summary_text == ''
+
+    action_modal.click_cancel_button()
+
+    confirmation_modal = ConfirmationModal(driver)
+    confirmation_modal.click_cancel_button()
+
+    assert action_modal.is_displayed
+
+    action_modal.click_cancel_button()
+    confirmation_modal.click_confirm_button()
+
+    assert action_modal.is_not_displayed
+
+
+@pytest.mark.homework_solution
+def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_with_x_icon(driver):
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+    actions_page.click_add_action_button()
+
+    action_modal = ActionModal(driver)
+    assert action_modal.is_displayed
+
+    action_modal.click_close_icon()
+
+    confirmation_modal = ConfirmationModal(driver)
+    confirmation_modal.click_cancel_button()
+
+    assert action_modal.is_displayed
+
+    action_modal.click_close_icon()
+    confirmation_modal.click_confirm_button()
+
+    assert action_modal.is_not_displayed
 
 
 def test_user_can_create_a_new_action(driver):

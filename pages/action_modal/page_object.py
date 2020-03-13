@@ -23,6 +23,14 @@ class ActionModal(BasePage):
         return [linked_item.text.replace('\n×', '') for linked_item in self.find_visible_elements(locators.LINKED_ITEM, timeout=3)]
 
     @property
+    def cancel_button(self):
+        return self.find_visible_element(locators.CANCEL_BUTTON)
+
+    @property
+    def close_icon(self):
+        return self.find_visible_element(locators.CLOSE_ICON)
+
+    @property
     def current_summary_text(self):
         return self.find_visible_element(locators.SUMMARY_SECTION).get_attribute('value')
 
@@ -33,6 +41,14 @@ class ActionModal(BasePage):
     @property
     def end_time_value(self):
         return self.find_visible_element(locators.END_TIME).get_attribute('value')
+
+    @property
+    def is_not_displayed(self):
+        return self.is_not_visible(locators.MODAL_HEADER)
+
+    @property
+    def is_displayed(self):
+        return self.is_visible(locators.MODAL_HEADER)
 
     @property
     def selected_action_type(self):
@@ -81,6 +97,12 @@ class ActionModal(BasePage):
         summary_section = self.find_visible_element(locators.SUMMARY_SECTION)
         summary_section.clear()
         summary_section.send_keys(desired_summary)
+
+    def click_cancel_button(self):
+        self.cancel_button.click()
+
+    def click_close_icon(self):
+        self.close_icon.click()
 
     def click_save_button(self):
         save_button = self.find_visible_element(locators.SAVE_BUTTON)
