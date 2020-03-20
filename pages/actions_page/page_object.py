@@ -1,3 +1,5 @@
+import logging
+
 from . import locators
 from pages.base_page import BasePage
 
@@ -24,11 +26,15 @@ class ActionsPage(BasePage):
         return int(self.find_visible_element(locators.action_count_by_description('Total')).text)
 
     def click_add_action_button(self):
+        logging.info('Clicking main "Add Action" button.')
         add_action_button = self.find_visible_element(locators.ADD_ACTION_BUTTON)
         add_action_button.click()
 
     def click_empty_state_add_action_button(self):
+        logging.info('Clicking empty state "Add Action" button.')
         self.empty_state_add_action_button.click()
 
     def navigate(self):
-        self.driver.get('https://staging.fiscalnote.com/actions')
+        actions_page_url = 'https://staging.fiscalnote.com/actions'
+        logging.info(f'Navigating to {actions_page_url}')
+        self.driver.get(actions_page_url)

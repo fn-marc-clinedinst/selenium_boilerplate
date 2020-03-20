@@ -1,4 +1,6 @@
+import logging
 import pytest
+import requests
 
 from datetime import datetime
 from random import choice
@@ -117,19 +119,23 @@ def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_clos
     assert action_modal.is_not_displayed
 
 
-@pytest.mark.homework_solution
 def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_with_x_icon(driver):
     login_page = LoginPage(driver)
     login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
+
+    welcome_message = "Welcome, Selenium"
+    logging.info(f'Verifying that the text "{welcome_message}" appears in the welcome message on the Home Page.')
+    assert welcome_message in home_page.welcome_message
 
     actions_page = ActionsPage(driver)
     actions_page.navigate()
     actions_page.click_add_action_button()
 
     action_modal = ActionModal(driver)
+
+    logging.info('Verifying Action Modal is visible.')
     assert action_modal.is_displayed
 
     action_modal.click_close_icon()
@@ -137,11 +143,13 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
     confirmation_modal = ConfirmationModal(driver)
     confirmation_modal.click_cancel_button()
 
+    logging.info('Verifying Action Modal is still visible.')
     assert action_modal.is_displayed
 
     action_modal.click_close_icon()
     confirmation_modal.click_confirm_button()
 
+    logging.info('Verifying Action Modal is no longer visible.')
     assert action_modal.is_not_displayed
 
 
@@ -180,3 +188,14 @@ def test_user_can_create_a_new_action(driver):
     confirmation_modal = ConfirmationModal(driver)
     confirmation_modal.click_ok_button()
 
+
+@pytest.mark.homework_solution
+def test_api_login():
+    login_credentials = {
+        'email': 'selenium.course@fiscalnote.com',
+        'password': 'not_my_real_password'
+    }
+
+    response = requests.post('https://staging.fiscalnote.com/api/2.0/login', data=login_credentials)
+
+    logging.info(response.json())

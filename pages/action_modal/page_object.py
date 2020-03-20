@@ -1,3 +1,5 @@
+import logging
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
@@ -102,6 +104,7 @@ class ActionModal(BasePage):
         self.cancel_button.click()
 
     def click_close_icon(self):
+        logging.info('Clicking the "X" icon on the Action Modal.')
         self.close_icon.click()
 
     def click_save_button(self):
