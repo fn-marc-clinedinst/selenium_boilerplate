@@ -34,6 +34,12 @@ class ActionsPage(BasePage):
         logging.info('Clicking empty state "Add Action" button.')
         self.empty_state_add_action_button.click()
 
+    def get_action_end_by_position(self, position):
+        return self.find_visible_element(locators.action_end_by_position(position)).text.replace('\n', ' ')
+
+    def get_action_start_by_position(self, position):
+        return self.find_visible_element(locators.action_start_by_position(position)).text.replace('\n', ' ')
+
     def navigate(self):
         actions_page_url = 'https://staging.fiscalnote.com/actions'
         logging.info(f'Navigating to {actions_page_url}')

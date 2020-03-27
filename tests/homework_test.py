@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 from random import choice
 from selenium.webdriver.common.by import By
+from time import sleep
 
 from pages.actions_page.page_object import ActionsPage
 from pages.action_modal.page_object import ActionModal
@@ -153,6 +154,7 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
     assert action_modal.is_not_displayed
 
 
+@pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
     login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
@@ -162,40 +164,57 @@ def test_user_can_create_a_new_action(driver):
 
     actions_page = ActionsPage(driver)
     actions_page.navigate()
-    actions_page.click_add_action_button()
 
-    action_modal = ActionModal(driver)
-    action_modal.enter_start_date('8/14/2019')
-    action_modal.enter_start_time('6:00am')
-    action_modal.enter_end_date('8/14/2019')
-    action_modal.enter_end_time('5:00pm')
-    action_modal.set_action_type('Phone Call')
-    action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
-    action_modal.add_labels(('agriculture', 'Farming', 'welfare'))
-    action_modal.add_issue('Agriculture')
+    # actions_page.click_add_action_button()
+    #
+    # action_modal = ActionModal(driver)
+    # action_modal.enter_start_date('8/14/2019')
+    # action_modal.enter_start_time('6:00am')
+    # action_modal.enter_end_date('8/14/2019')
+    # action_modal.enter_end_time('5:00pm')
+    # action_modal.set_action_type('Phone Call')
+    # action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
+    # action_modal.add_labels(('agriculture', 'Farming', 'welfare'))
+    # action_modal.add_issue('Agriculture')
+    #
+    # action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
+    # action_modal.add_summary(action_summary_text)
+    #
+    # action_modal.click_save_button()
 
-    action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
-    action_modal.add_summary(action_summary_text)
+    expected_action_1_start = "Mar 27, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
+    assert actions_page.get_action_start_by_position(1) == expected_action_1_start
 
-    action_modal.click_save_button()
+    expected_action_1_end = "Mar 27, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
+    assert actions_page.get_action_end_by_position(1) == expected_action_1_end
 
-    new_action = wait_for_element_to_be_visible(driver, new_action_summary(action_summary_text))
-    assert new_action.is_displayed()
+    expected_action_2_start = "Mar 27, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
+    assert actions_page.get_action_start_by_position(2) == expected_action_2_start
 
-    delete_icon = wait_for_element_to_be_visible(driver, delete_icon_by_action_summary(action_summary_text))
-    delete_icon.click()
+    expected_action_2_end = "Mar 27, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
+    assert actions_page.get_action_end_by_position(2) == expected_action_2_end
 
-    confirmation_modal = ConfirmationModal(driver)
-    confirmation_modal.click_ok_button()
+    expected_action_3_start = "Mar 4, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
+    assert actions_page.get_action_start_by_position(3) == expected_action_3_start
+
+    expected_action_3_end = "Mar 5, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
+    assert actions_page.get_action_end_by_position(3) == expected_action_3_end
 
 
-@pytest.mark.homework_solution
-def test_api_login():
+
+def test_api():
     login_credentials = {
         'email': 'selenium.course@fiscalnote.com',
         'password': 'not_my_real_password'
     }
 
-    response = requests.post('https://staging.fiscalnote.com/api/2.0/login', data=login_credentials)
+    auth_response = requests.post('https://staging.fiscalnote.com/api/2.0/login', data=login_credentials)
 
-    logging.info(response.json())
+    logging.info(auth_response)
+    logging.info(auth_response.json())

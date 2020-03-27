@@ -21,3 +21,17 @@ def action_count_by_description(description):
         'by': By.XPATH,
         'value': f'//figcaption[contains(string(), "{description}")]//preceding-sibling::figure'
     }
+
+
+def action_end_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'//tr[contains(@class, "actions-row__info")][{position}]//td[contains(@class, "actions-row__date-col")][2]'
+    }
+
+
+def action_start_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'//tr[contains(@class, "actions-row__info")][{position}]//td[contains(@class, "actions-row__date-col")][1]'
+    }
