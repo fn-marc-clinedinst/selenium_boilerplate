@@ -182,29 +182,37 @@ def test_user_can_create_a_new_action(driver):
     #
     # action_modal.click_save_button()
 
-    expected_action_1_start = "Mar 27, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
-    assert actions_page.get_action_start_by_position(1) == expected_action_1_start
+    # expected_action_1_start = "Mar 27, 2020 2:08 PM"
+    # logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
+    # assert actions_page.get_action_start_by_position(1) == expected_action_1_start
+    #
+    # expected_action_1_end = "Mar 27, 2020 3:08 PM"
+    # logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
+    # assert actions_page.get_action_end_by_position(1) == expected_action_1_end
+    #
+    # expected_action_2_start = "Mar 27, 2020 2:08 PM"
+    # logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
+    # assert actions_page.get_action_start_by_position(2) == expected_action_2_start
+    #
+    # expected_action_2_end = "Mar 27, 2020 3:08 PM"
+    # logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
+    # assert actions_page.get_action_end_by_position(2) == expected_action_2_end
+    #
+    # expected_action_3_start = "Mar 4, 2020 2:08 PM"
+    # logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
+    # assert actions_page.get_action_start_by_position(3) == expected_action_3_start
+    #
+    # expected_action_3_end = "Mar 5, 2020 3:08 PM"
+    # logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
+    # assert actions_page.get_action_end_by_position(3) == expected_action_3_end
 
-    expected_action_1_end = "Mar 27, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
-    assert actions_page.get_action_end_by_position(1) == expected_action_1_end
+    expected_creator = 'Tem Automation'
+    logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
+    assert actions_page.get_action_creator_by_position(1) == expected_creator
 
-    expected_action_2_start = "Mar 27, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
-    assert actions_page.get_action_start_by_position(2) == expected_action_2_start
-
-    expected_action_2_end = "Mar 27, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
-    assert actions_page.get_action_end_by_position(2) == expected_action_2_end
-
-    expected_action_3_start = "Mar 4, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
-    assert actions_page.get_action_start_by_position(3) == expected_action_3_start
-
-    expected_action_3_end = "Mar 5, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
-    assert actions_page.get_action_end_by_position(3) == expected_action_3_end
+    expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
+    logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
+    assert actions_page.get_action_attendees_by_position(1) == expected_attendees
 
 
 
