@@ -37,7 +37,6 @@ def action_creator_by_position(position):
     }
 
 
-
 def action_end_by_position(position):
     return {
         'by': By.XPATH,
@@ -45,8 +44,22 @@ def action_end_by_position(position):
     }
 
 
+def action_issues_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'(//tr[contains(@class, "actions-row__info")])[{position}]//td[contains(@class, "actions-row__projects-col")]//div[contains(@class, "trunk8-original")]//span'
+    }
+
+
 def action_start_by_position(position):
     return {
         'by': By.XPATH,
         'value': f'//tr[contains(@class, "actions-row__info")][{position}]//td[contains(@class, "actions-row__date-col")][1]'
+    }
+
+
+def action_summary_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'(//tr[contains(@class, "actions-row__info")])[{position}]//td[contains(@class, "actions-row__summary-col")]//div[contains(@class, "trunk8-original")]'
     }

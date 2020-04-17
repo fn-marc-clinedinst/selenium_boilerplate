@@ -157,7 +157,7 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
 @pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+    login_page.login('', '')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -206,23 +206,60 @@ def test_user_can_create_a_new_action(driver):
     # logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
     # assert actions_page.get_action_end_by_position(3) == expected_action_3_end
 
-    expected_creator = 'Tem Automation'
-    logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
-    assert actions_page.get_action_creator_by_position(1) == expected_creator
+    # expected_creator = 'Tem Automation'
+    # logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
+    # assert actions_page.get_action_creator_by_position(1) == expected_creator
+    #
+    # expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
+    # logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
+    # assert actions_page.get_action_attendees_by_position(1) == expected_attendees
 
-    expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
-    logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
-    assert actions_page.get_action_attendees_by_position(1) == expected_attendees
+    expected_issues = ['Agriculture', 'Farming', 'Welfare']
+    logging.info(f'Verifying that the "Issues" value for the action in position 1 equals "{expected_issues}"')
+    assert actions_page.get_action_issues_by_position(1) == expected_issues
+
+    expected_summary = 'Edit summary and find the position'
+    logging.info(f'Verifying that the "Summary" value for the action in position 1 equals "{expected_summary}"')
+    assert actions_page.get_action_summary_by_position(1) == expected_summary
 
 
-
+@pytest.mark.api
 def test_api():
     login_credentials = {
-        'email': 'selenium.course@fiscalnote.com',
-        'password': 'not_my_real_password'
+        'email': '',
+        'password': ''
     }
 
-    auth_response = requests.post('https://staging.fiscalnote.com/api/2.0/login', data=login_credentials)
+    login_response = requests.post('https://staging.fiscalnote.com/api/2.0/login', json=login_credentials)
+    auth_token = login_response.json()['data']['token']
+    auth_header = {
+        'Authorization': f'Token user_token="{auth_token}", user_email="{login_credentials["email"]}"'
+    }
 
-    logging.info(auth_response)
-    logging.info(auth_response.json())
+    # current_user_response = requests.get(
+    #     'https://staging.fiscalnote.com/api/2.0/current-user',
+    #     headers=auth_header
+    # )
+    # current_user_data = current_user_response.json()['data']
+    #
+    # logging.info(current_user_data['segmentation']['deploy_flags'])
+
+    create_action_response = requests.post(
+        'https://staging.fiscalnote.com/api/2.0/actions',
+        headers=auth_header,
+        json={
+            "summary": "this is an action created through the API",
+            "attendees": [
+                18268
+            ],
+            "linkedItems": [],
+            "actionType": 3,
+            "hashtags": [],
+            "startDate": "2020-04-17T15:49:43.523Z",
+            "endDate": "2020-04-17T16:49:43.523Z",
+            "projects": [],
+            "labels": []
+        }
+    )
+
+    logging.info(create_action_response.json())

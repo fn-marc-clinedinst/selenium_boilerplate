@@ -47,8 +47,14 @@ class ActionsPage(BasePage):
     def get_action_end_by_position(self, position):
         return self.find_visible_element(locators.action_end_by_position(position)).text.replace('\n', ' ')
 
+    def get_action_issues_by_position(self, position):
+        return [issue.get_attribute('innerText').strip() for issue in self.find_present_elements(locators.action_issues_by_position(position))]
+
     def get_action_start_by_position(self, position):
         return self.find_visible_element(locators.action_start_by_position(position)).text.replace('\n', ' ')
+
+    def get_action_summary_by_position(self, position):
+        return self.find_present_element(locators.action_summary_by_position(position)).get_attribute('innerText').strip()
 
     def navigate(self):
         actions_page_url = 'https://staging.fiscalnote.com/actions'
