@@ -7,6 +7,7 @@ from random import choice
 from selenium.webdriver.common.by import By
 from time import sleep
 
+from api import actions, authorization, current_user
 from pages.actions_page.page_object import ActionsPage
 from pages.action_modal.page_object import ActionModal
 from pages.confirmation_modal.page_object import ConfirmationModal
@@ -225,41 +226,11 @@ def test_user_can_create_a_new_action(driver):
 
 @pytest.mark.api
 def test_api():
-    login_credentials = {
-        'email': '',
-        'password': ''
-    }
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
+    user = current_user.get_current_user(auth_header)
+    action = actions.create_action(auth_header, action_type='Roundtable', summary='This is a custom summary.')
 
-    login_response = requests.post('https://staging.fiscalnote.com/api/2.0/login', json=login_credentials)
-    auth_token = login_response.json()['data']['token']
-    auth_header = {
-        'Authorization': f'Token user_token="{auth_token}", user_email="{login_credentials["email"]}"'
-    }
+    all_actions = actions.get_all_actions(auth_header)
+    action_ids = [action['id'] for action in all_actions]
 
-    # current_user_response = requests.get(
-    #     'https://staging.fiscalnote.com/api/2.0/current-user',
-    #     headers=auth_header
-    # )
-    # current_user_data = current_user_response.json()['data']
-    #
-    # logging.info(current_user_data['segmentation']['deploy_flags'])
-
-    create_action_response = requests.post(
-        'https://staging.fiscalnote.com/api/2.0/actions',
-        headers=auth_header,
-        json={
-            "summary": "this is an action created through the API",
-            "attendees": [
-                18268
-            ],
-            "linkedItems": [],
-            "actionType": 3,
-            "hashtags": [],
-            "startDate": "2020-04-17T15:49:43.523Z",
-            "endDate": "2020-04-17T16:49:43.523Z",
-            "projects": [],
-            "labels": []
-        }
-    )
-
-    logging.info(create_action_response.json())
+    logging.info(action_ids)
