@@ -63,3 +63,10 @@ def action_summary_by_position(position):
         'by': By.XPATH,
         'value': f'(//tr[contains(@class, "actions-row__info")])[{position}]//td[contains(@class, "actions-row__summary-col")]//div[contains(@class, "trunk8-original")]'
     }
+
+
+def delete_action_icon_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'(//i[contains(@class, "ion-trash-b")])[{position}]'
+    }

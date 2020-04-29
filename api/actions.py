@@ -1,3 +1,4 @@
+import logging
 import requests
 
 from . import current_user
@@ -33,7 +34,22 @@ def create_action(authorization_header, action_type='Meeting', attendees=None, s
     return create_action_response.json()
 
 
-def get_all_actions(authorization_header):
+def delete_all_actions(authorization_header):
+    all_actions = get_all_actions(authorization_header)
+    all_action_ids = [action['id'] for action in all_actions]
+
+    for action_id in all_action_ids:
+        logging.info(f'Attempting to delete action with ID {action_id}')
+        delete_response = requests.delete(f'{ACTIONS_ENDPOINT}/{action_id}', headers=authorization_header)
+
+        if delete_response.status_code == 200:
+            logging.info('Successfully deleted action.')
+            logging.info(delete_response.elapsed)
+        else:
+            logging.info('Failed to delete action.')
+
+
+def get_all_actions(authorization_header, page=1, per=100):
     get_all_actions_response = requests.post(
         f'{ACTIONS_ENDPOINT}/search',
         headers=authorization_header,
@@ -66,8 +82,8 @@ def get_all_actions(authorization_header):
             "withoutAssociatedItems": False,
             "id": None,
             "projectIds": [],
-            "page": 1,
-            "per": 15,
+            "page": page,
+            "per": per,
             "entityParams": {
                 "billParams": {
                     "ids": [],

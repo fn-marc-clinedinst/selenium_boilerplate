@@ -14,6 +14,18 @@ class ConfirmationModal(BasePage):
         return self.find_visible_element(locators.CONFIRM_BUTTON)
 
     @property
+    def is_displayed(self):
+        return self.is_visible(locators.MODAL_CONTAINER)
+
+    @property
+    def is_not_displayed(self):
+        return self.is_not_visible(locators.MODAL_CONTAINER)
+
+    @property
+    def modal_title(self):
+        return self.find_visible_element(locators.MODAL_TITLE).text
+
+    @property
     def ok_button(self):
         return self.find_visible_element(locators.OK_BUTTON)
 

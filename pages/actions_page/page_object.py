@@ -34,6 +34,10 @@ class ActionsPage(BasePage):
         logging.info('Clicking empty state "Add Action" button.')
         self.empty_state_add_action_button.click()
 
+    def click_delete_action_icon_by_position(self, position):
+        logging.info(f'Clicking the delete icon for action in position {position}.')
+        self.find_visible_element(locators.delete_action_icon_by_position(position)).click()
+
     def get_action_attendees_by_position(self, position):
         attendee_elements = [
             attendee for attendee in self.find_present_elements(locators.action_attendees_by_position(position))

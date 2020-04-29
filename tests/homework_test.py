@@ -155,7 +155,6 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
     assert action_modal.is_not_displayed
 
 
-@pytest.mark.homework_solution
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
     login_page.login('', '')
@@ -228,9 +227,47 @@ def test_user_can_create_a_new_action(driver):
 def test_api():
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
     user = current_user.get_current_user(auth_header)
-    action = actions.create_action(auth_header, action_type='Roundtable', summary='This is a custom summary.')
 
-    all_actions = actions.get_all_actions(auth_header)
-    action_ids = [action['id'] for action in all_actions]
+    # action = actions.create_action(auth_header, action_type='Roundtable', summary='This is a custom summary.')
 
-    logging.info(action_ids)
+    for number in range(1, 11):
+        actions.create_action(auth_header, summary=f'Action #{number}')
+
+    actions.delete_all_actions(auth_header)
+
+
+@pytest.mark.homework_solution
+def test_user_can_delete_action(driver):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'April291!')
+    actions.delete_all_actions(auth_header)
+    action = actions.create_action(auth_header, summary='This action needs to be deleted.')
+
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', '')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+    actions_page.click_delete_action_icon_by_position(1)
+
+    confirmation_modal = ConfirmationModal(driver)
+
+    logging.info('Verifying that the "Delete Action" modal is visible.')
+    assert confirmation_modal.is_displayed
+    assert confirmation_modal.modal_title == 'Delete Action'
+
+    confirmation_modal.click_cancel_button()
+
+    logging.info('Verifying that the "Delete Action" modal is not visible.')
+    assert confirmation_modal.is_not_displayed
+
+    logging.info('Verifying that the action in position 1 has a summary of "This action needs to be deleted."')
+    assert actions_page.get_action_summary_by_position(1) == 'This action needs to be deleted.'
+
+    actions_page.click_delete_action_icon_by_position(1)
+    confirmation_modal.click_ok_button()
+
+    # Todo: make sure no actions are visible
+    assert actions_page.total_actions_count == 0
