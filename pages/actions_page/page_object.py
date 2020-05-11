@@ -22,8 +22,16 @@ class ActionsPage(BasePage):
         return self.find_visible_element(locators.EMPTY_STATE_HELP_TEXT).text
 
     @property
+    def selected_count(self):
+        return self.find_visible_element(locators.SELECTED_COUNT).text
+
+    @property
     def total_actions_count(self):
         return int(self.find_visible_element(locators.action_count_by_description('Total')).text)
+
+    @property
+    def visible_actions_count(self):
+        return len(self.find_visible_elements(locators.ACTION_CONTAINER, timeout=5))
 
     def click_add_action_button(self):
         logging.info('Clicking main "Add Action" button.')
@@ -64,3 +72,10 @@ class ActionsPage(BasePage):
         actions_page_url = 'https://staging.fiscalnote.com/actions'
         logging.info(f'Navigating to {actions_page_url}')
         self.driver.get(actions_page_url)
+
+    def select_all_actions_on_current_page(self):
+        logging.info('Clicking on select dropdown.')
+        self.find_visible_element(locators.SELECT_DROPDOWN).click()
+
+        logging.info('Click the "Select all on current page" option.')
+        self.find_visible_element(locators.select_dropdown_option_by_option_text('Select all on current page')).click()

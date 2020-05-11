@@ -15,6 +15,7 @@ def create_action(authorization_header, action_type='Meeting', attendees=None, s
     if not attendees:
         attendees = [current_user.get_current_user(authorization_header)['id']]
 
+    logging.info(f'Creating action with summary: "{summary}"')
     create_action_response = requests.post(
         ACTIONS_ENDPOINT,
         headers=authorization_header,

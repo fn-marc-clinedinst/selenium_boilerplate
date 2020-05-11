@@ -236,20 +236,24 @@ def test_api():
     actions.delete_all_actions(auth_header)
 
 
-@pytest.mark.homework_solution
 def test_user_can_delete_action(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'April291!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
     actions.delete_all_actions(auth_header)
     action = actions.create_action(auth_header, summary='This action needs to be deleted.')
 
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', '')
+    login_page.login('selenium.course@fiscalnote.com', 'April291!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
 
     actions_page = ActionsPage(driver)
     actions_page.navigate()
+
+    expected_actions_count = 1
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
     actions_page.click_delete_action_icon_by_position(1)
 
     confirmation_modal = ConfirmationModal(driver)
@@ -269,5 +273,35 @@ def test_user_can_delete_action(driver):
     actions_page.click_delete_action_icon_by_position(1)
     confirmation_modal.click_ok_button()
 
-    # Todo: make sure no actions are visible
-    assert actions_page.total_actions_count == 0
+    expected_actions_count = 0
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+
+@pytest.mark.homework_solution
+def test_user_can_batch_delete_actions(driver):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
+    actions.delete_all_actions(auth_header)
+
+    for number in range(1, 11):
+        actions.create_action(auth_header, summary=f'Action #{number}')
+
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'April291!')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+
+    expected_actions_count = 10
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    actions_page.select_all_actions_on_current_page()
+
+    logging.info('Verifying that 10 actions are selected.')
+    assert actions_page.selected_count == '10 Selected'
+
+    sleep(5)

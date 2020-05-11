@@ -1,5 +1,10 @@
 from selenium.webdriver.common.by import By
 
+ACTION_CONTAINER = {
+    'by': By.CLASS_NAME,
+    'value': 'actions-row__info'
+}
+
 ADD_ACTION_BUTTON = {
     'by': By.XPATH,
     'value': '//button[text()="+ Add"]'
@@ -13,6 +18,16 @@ EMPTY_STATE_ADD_ACTION_BUTTON = {
 EMPTY_STATE_HELP_TEXT = {
     'by': By.CSS_SELECTOR,
     'value': '.actions-search__empty-content h5'
+}
+
+SELECT_DROPDOWN = {
+    'by': By.CLASS_NAME,
+    'value': 'content-table__select-all'
+}
+
+SELECTED_COUNT = {
+    'by': By.CLASS_NAME,
+    'value': 'actions-search__selected-text'
 }
 
 
@@ -69,4 +84,11 @@ def delete_action_icon_by_position(position):
     return {
         'by': By.XPATH,
         'value': f'(//i[contains(@class, "ion-trash-b")])[{position}]'
+    }
+
+
+def select_dropdown_option_by_option_text(option_text):
+    return {
+        'by': By.XPATH,
+        'value': f'//span[contains(@class, "content-table__select-all")]//li//a[contains(text(), "{option_text}")]'
     }
