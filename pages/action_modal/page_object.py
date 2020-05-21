@@ -20,6 +20,8 @@ class ActionModal(BasePage):
     def added_labels(self):
         return [label.text for label in self.find_visible_elements(locators.LABEL, timeout=3)]
 
+
+
     @property
     def added_linked_items(self):
         return [linked_item.text.replace('\n×', '') for linked_item in self.find_visible_elements(locators.LINKED_ITEM, timeout=3)]

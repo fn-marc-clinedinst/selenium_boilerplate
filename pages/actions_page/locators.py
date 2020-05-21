@@ -10,6 +10,11 @@ ADD_ACTION_BUTTON = {
     'value': '//button[text()="+ Add"]'
 }
 
+DELETE_BUTTON = {
+    'by': By.XPATH,
+    'value': '//span[contains(text(), "Delete")]//ancestor::button'
+}
+
 EMPTY_STATE_ADD_ACTION_BUTTON = {
     'by': By.CSS_SELECTOR,
     'value': '.actions-search__empty-content button'
@@ -35,6 +40,20 @@ def action_attendees_by_position(position):
     return {
         'by': By.XPATH,
         'value': f'(//tr[contains(@class, "actions-row__info")])[{position}]//td[contains(@class, "actions-row__attendees-col")]//div[contains(@class, "trunk8-original")]'
+    }
+
+
+def action_checkbox_by_action_summary(action_summary):
+    return {
+        'by': By.XPATH,
+        'value': f'//td[contains(@class, "actions-row__summary-col")]//p[contains(text(), "{action_summary}")]//ancestor::tr//div[contains(@class, "actions-row__checkbox")]'
+    }
+
+
+def action_checkbox_by_position(position):
+    return {
+        'by': By.XPATH,
+        'value': f'(//tr[contains(@class, "actions-row__info")])[{position}]//div[contains(@class, "actions-row__checkbox")]'
     }
 
 

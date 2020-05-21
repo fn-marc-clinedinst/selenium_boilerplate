@@ -14,6 +14,10 @@ class ActionsPage(BasePage):
         return int(self.find_visible_element(locators.action_count_by_description('This Week')).text)
 
     @property
+    def delete_button(self):
+        return self.find_visible_element(locators.DELETE_BUTTON)
+
+    @property
     def empty_state_add_action_button(self):
         return self.find_visible_element(locators.EMPTY_STATE_ADD_ACTION_BUTTON)
 
@@ -37,6 +41,10 @@ class ActionsPage(BasePage):
         logging.info('Clicking main "Add Action" button.')
         add_action_button = self.find_visible_element(locators.ADD_ACTION_BUTTON)
         add_action_button.click()
+
+    def click_delete_button(self):
+        logging.info('Clicking "Deleting" button.')
+        self.delete_button.click()
 
     def click_empty_state_add_action_button(self):
         logging.info('Clicking empty state "Add Action" button.')
@@ -73,9 +81,22 @@ class ActionsPage(BasePage):
         logging.info(f'Navigating to {actions_page_url}')
         self.driver.get(actions_page_url)
 
+    def select_action_by_action_summary(self, action_summary):
+        logging.info(f'Clicking checkbox for action with summary "{action_summary}"')
+        self.find_visible_element(locators.action_checkbox_by_action_summary(action_summary)).click()
+
+    def select_action_by_position(self, position):
+        logging.info(f'Clicking checkbox for action in {position}.')
+        self.find_visible_element(locators.action_checkbox_by_position(position)).click()
+
     def select_all_actions_on_current_page(self):
         logging.info('Clicking on select dropdown.')
         self.find_visible_element(locators.SELECT_DROPDOWN).click()
 
         logging.info('Click the "Select all on current page" option.')
         self.find_visible_element(locators.select_dropdown_option_by_option_text('Select all on current page')).click()
+
+    def wait_for_total_actions_count_to_equal(self, expected_actions_count):
+        locator = locators.action_count_by_description('Total')
+
+        return int(self.wait_for_text_in_element_to_equal(locator, str(expected_actions_count)))

@@ -225,15 +225,20 @@ def test_user_can_create_a_new_action(driver):
 
 @pytest.mark.api
 def test_api():
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
-    user = current_user.get_current_user(auth_header)
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Thisisatest1!')
 
-    # action = actions.create_action(auth_header, action_type='Roundtable', summary='This is a custom summary.')
+    # for number in range(1, 11):
+    #     actions.create_action(auth_header, summary=f'Action #{number}')
 
-    for number in range(1, 11):
-        actions.create_action(auth_header, summary=f'Action #{number}')
+    # actions.delete_all_actions(auth_header)
 
-    actions.delete_all_actions(auth_header)
+    # action = actions.create_action(auth_header, summary='Needs to be deleted.')
+    # logging.info(action['id'])
+
+    # A bunch of UI code here
+
+    # actions.delete_action_by_id(auth_header, 221070)
+
 
 
 def test_user_can_delete_action(driver):
@@ -278,16 +283,15 @@ def test_user_can_delete_action(driver):
     assert actions_page.visible_actions_count == expected_actions_count
 
 
-@pytest.mark.homework_solution
 def test_user_can_batch_delete_actions(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
     actions.delete_all_actions(auth_header)
 
     for number in range(1, 11):
         actions.create_action(auth_header, summary=f'Action #{number}')
 
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'April291!')
+    login_page.login('selenium.course@fiscalnote.com', 'Meatball1!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -303,5 +307,79 @@ def test_user_can_batch_delete_actions(driver):
 
     logging.info('Verifying that 10 actions are selected.')
     assert actions_page.selected_count == '10 Selected'
+
+    actions_page.click_delete_button()
+
+    confirmation_modal = ConfirmationModal(driver)
+    confirmation_modal.click_cancel_button()
+
+    actions_page.click_delete_button()
+
+    confirmation_modal.click_ok_button()
+
+    expected_actions_count = 0
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+    assert expected_actions_count == actual_actions_count
+
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    driver.refresh()
+
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+    assert expected_actions_count == actual_actions_count
+
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+
+@pytest.mark.homework_solution
+def test_user_can_batch_delete_individual_actions(driver):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
+    actions.delete_all_actions(auth_header)
+
+    for number in range(1, 11):
+        actions.create_action(auth_header, summary=f'Action #{number}')
+
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'Meatball1!!')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+
+    expected_actions_count = 10
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    positions = list(range(1, 11))
+    position = choice(positions)
+    positions.remove(position)
+    actions_page.select_action_by_position(position)
+
+    position = choice(positions)
+    positions.remove(position)
+    actions_page.select_action_by_position(position)
+
+    position = choice(positions)
+    positions.remove(position)
+    actions_page.select_action_by_position(position)
+
+    actions_page.click_delete_button()
+
+    confirmation_modal = ConfirmationModal(driver)
+    confirmation_modal.click_ok_button()
+
+    expected_actions_count = 7
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+    assert expected_actions_count == actual_actions_count
+
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
 
     sleep(5)
