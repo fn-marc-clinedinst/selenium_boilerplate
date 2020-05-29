@@ -5,6 +5,16 @@ ACTION_CONTAINER = {
     'value': 'actions-row__info'
 }
 
+ACTION_SUMMARY = {
+    'by': By.CSS_SELECTOR,
+    'value': '.actions-row__info .actions-row__summary-col'
+}
+
+ACTIONS_SHOWN_COUNT = {
+    'by': By.CSS_SELECTOR,
+    'value': '.results-count-container .results-count'
+}
+
 ADD_ACTION_BUTTON = {
     'by': By.XPATH,
     'value': '//button[text()="+ Add"]'

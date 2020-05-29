@@ -13,6 +13,7 @@ from pages.action_modal.page_object import ActionModal
 from pages.confirmation_modal.page_object import ConfirmationModal
 from pages.home_page.page_object import HomePage
 from pages.login_page.page_object import LoginPage
+from pages.top_search.page_object import TopSearch
 from utilities.validators import date_is_valid, time_is_valid
 from utilities.wait import wait_for_element_to_be_visible
 
@@ -335,12 +336,12 @@ def test_user_can_batch_delete_actions(driver):
     assert actions_page.visible_actions_count == expected_actions_count
 
 
-@pytest.mark.homework_solution
 def test_user_can_batch_delete_individual_actions(driver):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
     actions.delete_all_actions(auth_header)
 
-    for number in range(1, 11):
+    # range(10, 0, -1)
+    for number in range(10, 0, -1):
         actions.create_action(auth_header, summary=f'Action #{number}')
 
     login_page = LoginPage(driver)
@@ -357,17 +358,13 @@ def test_user_can_batch_delete_individual_actions(driver):
     assert actions_page.visible_actions_count == expected_actions_count
 
     positions = list(range(1, 11))
-    position = choice(positions)
-    positions.remove(position)
-    actions_page.select_action_by_position(position)
+    deleted_action_positions = []
 
-    position = choice(positions)
-    positions.remove(position)
-    actions_page.select_action_by_position(position)
-
-    position = choice(positions)
-    positions.remove(position)
-    actions_page.select_action_by_position(position)
+    for iteration in range(3):
+        position = choice(positions)
+        positions.remove(position)
+        actions_page.select_action_by_position(position)
+        deleted_action_positions.append(position)
 
     actions_page.click_delete_button()
 
@@ -381,5 +378,90 @@ def test_user_can_batch_delete_individual_actions(driver):
 
     logging.info(f'Verifying that {expected_actions_count} actions are visible.')
     assert actions_page.visible_actions_count == expected_actions_count
+
+    expected_action_summaries = [f'Action #{position}' for position in positions]
+    logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
+
+    driver.refresh()
+
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+    assert expected_actions_count == actual_actions_count
+
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
+
+
+@pytest.mark.homework_solution
+def test_user_can_search_for_actions_by_action_summary(driver):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
+    actions.delete_all_actions(auth_header)
+
+    action_summaries = [
+        'this action summary is unique',
+        'this action summary is the same',
+        'this action summary is the same'
+    ]
+
+    for action_summary in action_summaries:
+        actions.create_action(auth_header, summary=action_summary)
+
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'Meatball1!!')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+
+    expected_actions_count = 3
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    expected_visible_actions = list(reversed(action_summaries))
+    logging.info(f'Verifying that the following actions are visible: {expected_visible_actions}')
+    assert actions_page.visible_action_summaries == expected_visible_actions
+
+    top_search = TopSearch(driver)
+    top_search.perform_search('unique')
+
+    expected_actions_count = 1
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    expected_action_summaries = ['this action summary is unique']
+    logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
+
+    top_search.perform_search('same')
+
+    expected_actions_count = 2
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    expected_action_summaries = [
+        'this action summary is the same',
+        'this action summary is the same'
+    ]
+    logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
+
+    top_search.perform_search('this_should_not_match_anything')
+
+    expected_actions_count = 0
+    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    expected_action_summaries = []
+    logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
 
     sleep(5)

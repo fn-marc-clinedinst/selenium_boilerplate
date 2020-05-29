@@ -34,6 +34,10 @@ class ActionsPage(BasePage):
         return int(self.find_visible_element(locators.action_count_by_description('Total')).text)
 
     @property
+    def visible_action_summaries(self):
+        return [action_summary.text for action_summary in self.find_visible_elements(locators.ACTION_SUMMARY)]
+
+    @property
     def visible_actions_count(self):
         return len(self.find_visible_elements(locators.ACTION_CONTAINER, timeout=5))
 
@@ -97,6 +101,6 @@ class ActionsPage(BasePage):
         self.find_visible_element(locators.select_dropdown_option_by_option_text('Select all on current page')).click()
 
     def wait_for_total_actions_count_to_equal(self, expected_actions_count):
-        locator = locators.action_count_by_description('Total')
+        locator = locators.ACTIONS_SHOWN_COUNT
 
         return int(self.wait_for_text_in_element_to_equal(locator, str(expected_actions_count)))
