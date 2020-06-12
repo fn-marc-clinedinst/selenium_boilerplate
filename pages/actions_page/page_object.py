@@ -26,6 +26,10 @@ class ActionsPage(BasePage):
         return self.find_visible_element(locators.EMPTY_STATE_HELP_TEXT).text
 
     @property
+    def see_actions_summary_link(self):
+        return self.find_visible_element(locators.SEE_ACTIONS_SUMMARY_LINK)
+
+    @property
     def selected_count(self):
         return self.find_visible_element(locators.SELECTED_COUNT).text
 
@@ -57,6 +61,10 @@ class ActionsPage(BasePage):
     def click_delete_action_icon_by_position(self, position):
         logging.info(f'Clicking the delete icon for action in position {position}.')
         self.find_visible_element(locators.delete_action_icon_by_position(position)).click()
+
+    def click_see_actions_summary_link(self):
+        logging.info('Clicking "See actions summary" link.')
+        self.see_actions_summary_link.click()
 
     def get_action_attendees_by_position(self, position):
         attendee_elements = [

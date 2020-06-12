@@ -3,6 +3,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
+from pages import ActionsPage, HomePage, LoginPage
 from tests import config
 
 
@@ -72,3 +73,20 @@ def driver(request):
     request.addfinalizer(_quit)
 
     return _driver
+
+
+@pytest.fixture
+def actions_page(driver):
+    return ActionsPage(driver)
+
+
+@pytest.fixture
+def home_page(driver):
+    return HomePage(driver)
+
+
+@pytest.fixture
+def login_page(driver):
+    return LoginPage(driver)
+
+

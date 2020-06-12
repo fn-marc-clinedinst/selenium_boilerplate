@@ -1,6 +1,8 @@
 import logging
 import requests
 
+from datetime import datetime, timedelta
+
 from . import current_user
 
 ACTIONS_ENDPOINT = 'https://staging.fiscalnote.com/api/2.0/actions'
@@ -11,7 +13,14 @@ ACTION_TYPE_MAPPING = {
 }
 
 
-def create_action(authorization_header, action_type='Meeting', attendees=None, summary=''):
+def create_action(
+    authorization_header,
+    action_type='Meeting',
+    attendees=None,
+    end_date=datetime.now() + timedelta(hours=1),
+    start_date=datetime.now(),
+    summary=''
+):
     if not attendees:
         attendees = [current_user.get_current_user(authorization_header)['id']]
 
@@ -25,8 +34,8 @@ def create_action(authorization_header, action_type='Meeting', attendees=None, s
             "linkedItems": [],
             "actionType": ACTION_TYPE_MAPPING.get(action_type),
             "hashtags": [],
-            "startDate": "2020-04-17T15:49:43.523Z",
-            "endDate": "2020-04-17T16:49:43.523Z",
+            "startDate": start_date.isoformat(),
+            "endDate": end_date.isoformat(),
             "projects": [],
             "labels": []
         }

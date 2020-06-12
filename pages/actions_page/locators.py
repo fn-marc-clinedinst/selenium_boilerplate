@@ -35,6 +35,11 @@ EMPTY_STATE_HELP_TEXT = {
     'value': '.actions-search__empty-content h5'
 }
 
+SEE_ACTIONS_SUMMARY_LINK = {
+    'by': By.CSS_SELECTOR,
+    'value': '.actions-summary-bar button'
+}
+
 SELECT_DROPDOWN = {
     'by': By.CLASS_NAME,
     'value': 'content-table__select-all'

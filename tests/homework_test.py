@@ -2,18 +2,14 @@ import logging
 import pytest
 import requests
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import choice
 from selenium.webdriver.common.by import By
 from time import sleep
 
 from api import actions, authorization, current_user
-from pages.actions_page.page_object import ActionsPage
-from pages.action_modal.page_object import ActionModal
-from pages.confirmation_modal.page_object import ConfirmationModal
-from pages.home_page.page_object import HomePage
-from pages.login_page.page_object import LoginPage
-from pages.top_search.page_object import TopSearch
+
+from pages import ActionModal, ActionsPage, ConfirmationModal, HomePage, LoginPage, TopSearch
 from utilities.validators import date_is_valid, time_is_valid
 from utilities.wait import wait_for_element_to_be_visible
 
@@ -69,12 +65,8 @@ def test_action_counts_for_empty_state(driver):
 
 
 def test_user_sees_correct_default_state_for_action_modal(driver):
-    pass
-
-
-def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -109,6 +101,19 @@ def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_clos
 
     assert action_modal.current_summary_text == ''
 
+
+def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(driver):
+    login_page = LoginPage(driver)
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+
+    home_page = HomePage(driver)
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page = ActionsPage(driver)
+    actions_page.navigate()
+    actions_page.click_empty_state_add_action_button()
+
+    action_modal = ActionModal(driver)
     action_modal.click_cancel_button()
 
     confirmation_modal = ConfirmationModal(driver)
@@ -158,62 +163,61 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
 
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
-    login_page.login('', '')
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
 
     actions_page = ActionsPage(driver)
     actions_page.navigate()
+    actions_page.click_add_action_button()
 
-    # actions_page.click_add_action_button()
-    #
-    # action_modal = ActionModal(driver)
-    # action_modal.enter_start_date('8/14/2019')
-    # action_modal.enter_start_time('6:00am')
-    # action_modal.enter_end_date('8/14/2019')
-    # action_modal.enter_end_time('5:00pm')
-    # action_modal.set_action_type('Phone Call')
-    # action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
-    # action_modal.add_labels(('agriculture', 'Farming', 'welfare'))
-    # action_modal.add_issue('Agriculture')
-    #
-    # action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
-    # action_modal.add_summary(action_summary_text)
-    #
-    # action_modal.click_save_button()
+    action_modal = ActionModal(driver)
+    action_modal.enter_start_date('8/14/2019')
+    action_modal.enter_start_time('6:00am')
+    action_modal.enter_end_date('8/14/2019')
+    action_modal.enter_end_time('5:00pm')
+    action_modal.set_action_type('Phone Call')
+    action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
+    action_modal.add_labels(('agriculture', 'farming', 'welfare'))
+    action_modal.add_issue('Agriculture')
 
-    # expected_action_1_start = "Mar 27, 2020 2:08 PM"
-    # logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
-    # assert actions_page.get_action_start_by_position(1) == expected_action_1_start
-    #
-    # expected_action_1_end = "Mar 27, 2020 3:08 PM"
-    # logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
-    # assert actions_page.get_action_end_by_position(1) == expected_action_1_end
-    #
-    # expected_action_2_start = "Mar 27, 2020 2:08 PM"
-    # logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
-    # assert actions_page.get_action_start_by_position(2) == expected_action_2_start
-    #
-    # expected_action_2_end = "Mar 27, 2020 3:08 PM"
-    # logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
-    # assert actions_page.get_action_end_by_position(2) == expected_action_2_end
-    #
-    # expected_action_3_start = "Mar 4, 2020 2:08 PM"
-    # logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
-    # assert actions_page.get_action_start_by_position(3) == expected_action_3_start
-    #
-    # expected_action_3_end = "Mar 5, 2020 3:08 PM"
-    # logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
-    # assert actions_page.get_action_end_by_position(3) == expected_action_3_end
+    action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
+    action_modal.add_summary(action_summary_text)
 
-    # expected_creator = 'Tem Automation'
-    # logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
-    # assert actions_page.get_action_creator_by_position(1) == expected_creator
-    #
-    # expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
-    # logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
-    # assert actions_page.get_action_attendees_by_position(1) == expected_attendees
+    action_modal.click_save_button()
+
+    expected_action_1_start = "Mar 27, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
+    assert actions_page.get_action_start_by_position(1) == expected_action_1_start
+
+    expected_action_1_end = "Mar 27, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
+    assert actions_page.get_action_end_by_position(1) == expected_action_1_end
+
+    expected_action_2_start = "Mar 27, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
+    assert actions_page.get_action_start_by_position(2) == expected_action_2_start
+
+    expected_action_2_end = "Mar 27, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
+    assert actions_page.get_action_end_by_position(2) == expected_action_2_end
+
+    expected_action_3_start = "Mar 4, 2020 2:08 PM"
+    logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
+    assert actions_page.get_action_start_by_position(3) == expected_action_3_start
+
+    expected_action_3_end = "Mar 5, 2020 3:08 PM"
+    logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
+    assert actions_page.get_action_end_by_position(3) == expected_action_3_end
+
+    expected_creator = 'Tem Automation'
+    logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
+    assert actions_page.get_action_creator_by_position(1) == expected_creator
+
+    expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
+    logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
+    assert actions_page.get_action_attendees_by_position(1) == expected_attendees
 
     expected_issues = ['Agriculture', 'Farming', 'Welfare']
     logging.info(f'Verifying that the "Issues" value for the action in position 1 equals "{expected_issues}"')
@@ -224,31 +228,13 @@ def test_user_can_create_a_new_action(driver):
     assert actions_page.get_action_summary_by_position(1) == expected_summary
 
 
-@pytest.mark.api
-def test_api():
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Thisisatest1!')
-
-    # for number in range(1, 11):
-    #     actions.create_action(auth_header, summary=f'Action #{number}')
-
-    # actions.delete_all_actions(auth_header)
-
-    # action = actions.create_action(auth_header, summary='Needs to be deleted.')
-    # logging.info(action['id'])
-
-    # A bunch of UI code here
-
-    # actions.delete_action_by_id(auth_header, 221070)
-
-
-
 def test_user_can_delete_action(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', '')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
     actions.delete_all_actions(auth_header)
-    action = actions.create_action(auth_header, summary='This action needs to be deleted.')
+    actions.create_action(auth_header, summary='This action needs to be deleted.')
 
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'April291!')
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -285,14 +271,14 @@ def test_user_can_delete_action(driver):
 
 
 def test_user_can_batch_delete_actions(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
     actions.delete_all_actions(auth_header)
 
     for number in range(1, 11):
         actions.create_action(auth_header, summary=f'Action #{number}')
 
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'Meatball1!!')
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -340,7 +326,6 @@ def test_user_can_batch_delete_individual_actions(driver):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
     actions.delete_all_actions(auth_header)
 
-    # range(10, 0, -1)
     for number in range(10, 0, -1):
         actions.create_action(auth_header, summary=f'Action #{number}')
 
@@ -396,9 +381,8 @@ def test_user_can_batch_delete_individual_actions(driver):
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
-@pytest.mark.homework_solution
 def test_user_can_search_for_actions_by_action_summary(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
     actions.delete_all_actions(auth_header)
 
     action_summaries = [
@@ -411,7 +395,7 @@ def test_user_can_search_for_actions_by_action_summary(driver):
         actions.create_action(auth_header, summary=action_summary)
 
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'Meatball1!!')
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -463,5 +447,40 @@ def test_user_can_search_for_actions_by_action_summary(driver):
     expected_action_summaries = []
     logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
     assert actions_page.visible_action_summaries == expected_action_summaries
+
+
+@pytest.mark.homework_solution
+def test_user_can_open_actions_summary_modal(actions_page, home_page, login_page):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
+    actions.delete_all_actions(auth_header)
+
+    logging.info('Creating 5 past actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() - timedelta(days=7),
+            start_date=datetime.now() - timedelta(days=7, hours=1),
+            summary='past action'
+        )
+
+    logging.info('Creating 10 actions on current day.')
+    for number in range(10):
+        actions.create_action(auth_header, summary='current date')
+
+    logging.info('Creating 5 future actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() + timedelta(days=7, hours=1),
+            start_date=datetime.now() + timedelta(days=7),
+            summary='future action'
+        )
+
+    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page.navigate()
+    actions_page.click_see_actions_summary_link()
 
     sleep(5)
