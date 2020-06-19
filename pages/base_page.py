@@ -66,6 +66,19 @@ class BasePage:
         ActionChains(self.driver).move_to_element(element).perform()
 
     def wait_for_number_of_elements_to_be_visible(self, locator, expected_count, timeout=BASE_TIMEOUT):
+        # Create a seconds waited variable and set it to 0.
+        # Create a number of elements variable and set it to 0.
+        #
+        # Repeat the following steps for as long as the number of seconds waited is less than the timeout.
+        #
+        # Calculate the number of visible elements. (The built-in len() function and our find_visible_elements
+        # function will be helpful here.)
+        #
+        # If the number of elements equals the expected count, return the number of elements.
+        #
+        # Otherwise, sleep for 1 second and increment the seconds waited counter.
+        #
+        # If the timeout is hit, return the number of elements.
         pass
 
     def wait_for_text_in_element_to_equal(self, locator, expected_text, timeout=BASE_TIMEOUT):
