@@ -1,6 +1,6 @@
 from .action_modal.page_object import ActionModal
 from .actions_page.page_object import ActionsPage
-from .base_page import BasePage
+from .action_summary_modal.page_object import ActionSummaryModal
 from .confirmation_modal.page_object import ConfirmationModal
 from .home_page.page_object import HomePage
 from .login_page.page_object import LoginPage

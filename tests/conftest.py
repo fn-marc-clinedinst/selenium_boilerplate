@@ -3,7 +3,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from pages import ActionsPage, HomePage, LoginPage
+from pages import ActionsPage, ActionSummaryModal, HomePage, LoginPage
 from tests import config
 
 
@@ -78,6 +78,11 @@ def driver(request):
 @pytest.fixture
 def actions_page(driver):
     return ActionsPage(driver)
+
+
+@pytest.fixture
+def actions_summary_modal(driver):
+    return ActionSummaryModal(driver)
 
 
 @pytest.fixture

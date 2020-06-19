@@ -35,6 +35,11 @@ EMPTY_STATE_HELP_TEXT = {
     'value': '.actions-search__empty-content h5'
 }
 
+LOAD_MORE = {
+    'by': By.CLASS_NAME,
+    'value': 'actions-search__load-more'
+}
+
 SEE_ACTIONS_SUMMARY_LINK = {
     'by': By.CSS_SELECTOR,
     'value': '.actions-summary-bar button'

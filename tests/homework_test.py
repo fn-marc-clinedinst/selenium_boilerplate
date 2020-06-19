@@ -449,9 +449,8 @@ def test_user_can_search_for_actions_by_action_summary(driver):
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
-@pytest.mark.homework_solution
-def test_user_can_open_actions_summary_modal(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
+def test_user_can_open_actions_summary_modal(actions_page, actions_summary_modal, home_page, login_page):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June191!')
     actions.delete_all_actions(auth_header)
 
     logging.info('Creating 5 past actions.')
@@ -476,11 +475,66 @@ def test_user_can_open_actions_summary_modal(actions_page, home_page, login_page
             summary='future action'
         )
 
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+    login_page.login('selenium.course@fiscalnote.com', 'June191!')
 
     assert "Welcome" in home_page.welcome_message
 
     actions_page.navigate()
     actions_page.click_see_actions_summary_link()
+
+    expected_total_actions_count = 20
+    logging.info(f'Verify that "Total Actions" equals {expected_total_actions_count}')
+    assert actions_summary_modal.total_actions == expected_total_actions_count
+
+    logging.info(f'Verify that "Total Actions" in the modal matches what is on the page.')
+    assert actions_summary_modal.total_actions == actions_page.total_actions_count
+
+    expected_actions_this_month = 20
+    logging.info(f'Verify that "Actions This Month" equals {expected_actions_this_month}')
+    assert actions_summary_modal.actions_this_month == expected_total_actions_count
+
+    logging.info(f'Verify that "Actions This Month" in the modal matches what is on the page.')
+    assert actions_summary_modal.actions_this_month == actions_page.actions_this_month_count
+
+    expected_actions_this_week = 10
+    logging.info(f'Verify that "Actions This Week" equals {expected_actions_this_week}')
+    assert actions_summary_modal.actions_this_week == expected_actions_this_week
+
+    logging.info(f'Verify that "Actions This Week" in the modal matches what is on the page.')
+    assert actions_summary_modal.actions_this_week == actions_page.actions_this_week_count
+
+
+@pytest.mark.homework_solution
+def test_user_can_load_more_actions(actions_page, home_page, login_page):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June191!')
+    actions.delete_all_actions(auth_header)
+
+    logging.info('Creating 40 actions.')
+    for number in range(1, 41):
+        actions.create_action(auth_header, summary=f'Summary #{number}')
+
+    login_page.login('selenium.course@fiscalnote.com', 'June191!')
+
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page.navigate()
+
+    expected_actions_count = 15
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    actions_page.load_more_actions()
+    sleep(2)
+
+    expected_actions_count = 30
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
+
+    actions_page.load_more_actions()
+    sleep(2)
+
+    expected_actions_count = 40
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actions_page.visible_actions_count == expected_actions_count
 
     sleep(5)

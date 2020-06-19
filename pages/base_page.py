@@ -1,4 +1,5 @@
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.expected_conditions import (
     invisibility_of_element,
     presence_of_element_located,
@@ -59,6 +60,13 @@ class BasePage:
 
     def is_visible(self, locator, timeout=BASE_TIMEOUT):
         return self.find_visible_element(locator, timeout=timeout) is not None
+
+    def move_to_element(self, locator):
+        element = self.find_present_element(locator)
+        ActionChains(self.driver).move_to_element(element).perform()
+
+    def wait_for_number_of_elements_to_be_visible(self, locator, expected_count, timeout=BASE_TIMEOUT):
+        pass
 
     def wait_for_text_in_element_to_equal(self, locator, expected_text, timeout=BASE_TIMEOUT):
         element_text = None

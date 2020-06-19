@@ -93,6 +93,10 @@ class ActionsPage(BasePage):
         logging.info(f'Navigating to {actions_page_url}')
         self.driver.get(actions_page_url)
 
+    def load_more_actions(self):
+        logging.info('Loading more actions.')
+        self.move_to_element(locators.LOAD_MORE)
+
     def select_action_by_action_summary(self, action_summary):
         logging.info(f'Clicking checkbox for action with summary "{action_summary}"')
         self.find_visible_element(locators.action_checkbox_by_action_summary(action_summary)).click()
