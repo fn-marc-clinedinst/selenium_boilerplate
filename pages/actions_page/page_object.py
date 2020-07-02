@@ -50,6 +50,14 @@ class ActionsPage(BasePage):
         add_action_button = self.find_visible_element(locators.ADD_ACTION_BUTTON)
         add_action_button.click()
 
+    def click_date(self, end_or_start, desired_date):
+        logging.info(f'Click the date with text "{desired_date}" in the calendar widget.')
+        self.find_visible_element(locators.date_by_date_text(end_or_start, desired_date)).click()
+
+    def click_date_filter_apply_button(self, end_or_start):
+        logging.info(f'Clicking the "Apply" button for the "{end_or_start}" filter.')
+        self.find_visible_element(locators.date_filter_apply_button(end_or_start)).click()
+
     def click_delete_button(self):
         logging.info('Clicking "Deleting" button.')
         self.delete_button.click()
@@ -97,6 +105,22 @@ class ActionsPage(BasePage):
         logging.info('Loading more actions.')
         self.move_to_element(locators.LOAD_MORE)
 
+    def move_calendar_widget_back(self, end_or_start):
+        logging.info('Moving calendar widget to previous month.')
+
+        # Was previously using .ion-chevron-left here. Switched to a parent locator of .pmu-prev
+        self.find_present_element(locators.date_filter_previous_next(end_or_start, 'prev')).click()
+
+    def move_calendar_widget_forward(self, end_or_start):
+        logging.info('Moving calendar widget to next month.')
+
+        # Was previously using .ion-chevron-left here. Switched to a parent locator of .pmu-next
+        self.find_present_element(locators.date_filter_previous_next(end_or_start, 'next')).click()
+
+    def open_filter_by_filter_text(self, filter_text):
+        logging.info(f'Opening filter with text "{filter_text}."')
+        self.find_visible_element(locators.actions_filter_by_filter_text(filter_text)).click()
+
     def select_action_by_action_summary(self, action_summary):
         logging.info(f'Clicking checkbox for action with summary "{action_summary}"')
         self.find_visible_element(locators.action_checkbox_by_action_summary(action_summary)).click()
@@ -111,6 +135,9 @@ class ActionsPage(BasePage):
 
         logging.info('Click the "Select all on current page" option.')
         self.find_visible_element(locators.select_dropdown_option_by_option_text('Select all on current page')).click()
+
+    def wait_for_visible_actions_count_to_equal(self, expected_actions_count):
+        return self.wait_for_number_of_elements_to_be_visible(locators.ACTION_CONTAINER, expected_actions_count)
 
     def wait_for_total_actions_count_to_equal(self, expected_actions_count):
         locator = locators.ACTIONS_SHOWN_COUNT

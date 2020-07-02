@@ -66,7 +66,7 @@ def test_action_counts_for_empty_state(driver):
 
 def test_user_sees_correct_default_state_for_action_modal(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -104,7 +104,7 @@ def test_user_sees_correct_default_state_for_action_modal(driver):
 
 def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -163,7 +163,7 @@ def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_wi
 
 def test_user_can_create_a_new_action(driver):
     login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     home_page = HomePage(driver)
     assert "Welcome" in home_page.welcome_message
@@ -229,7 +229,7 @@ def test_user_can_create_a_new_action(driver):
 
 
 def test_user_can_delete_action(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
     actions.create_action(auth_header, summary='This action needs to be deleted.')
 
@@ -271,7 +271,7 @@ def test_user_can_delete_action(driver):
 
 
 def test_user_can_batch_delete_actions(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
 
     for number in range(1, 11):
@@ -323,7 +323,7 @@ def test_user_can_batch_delete_actions(driver):
 
 
 def test_user_can_batch_delete_individual_actions(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'Meatball1!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
 
     for number in range(10, 0, -1):
@@ -382,7 +382,7 @@ def test_user_can_batch_delete_individual_actions(driver):
 
 
 def test_user_can_search_for_actions_by_action_summary(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June121!!!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
 
     action_summaries = [
@@ -450,7 +450,7 @@ def test_user_can_search_for_actions_by_action_summary(driver):
 
 
 def test_user_can_open_actions_summary_modal(actions_page, actions_summary_modal, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June191!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
 
     logging.info('Creating 5 past actions.')
@@ -475,7 +475,7 @@ def test_user_can_open_actions_summary_modal(actions_page, actions_summary_modal
             summary='future action'
         )
 
-    login_page.login('selenium.course@fiscalnote.com', 'June191!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     assert "Welcome" in home_page.welcome_message
 
@@ -504,37 +504,86 @@ def test_user_can_open_actions_summary_modal(actions_page, actions_summary_modal
     assert actions_summary_modal.actions_this_week == actions_page.actions_this_week_count
 
 
-@pytest.mark.homework_solution
 def test_user_can_load_more_actions(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'June191!')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
 
     logging.info('Creating 40 actions.')
     for number in range(1, 41):
         actions.create_action(auth_header, summary=f'Summary #{number}')
 
-    login_page.login('selenium.course@fiscalnote.com', 'June191!')
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
 
     assert "Welcome" in home_page.welcome_message
 
     actions_page.navigate()
 
     expected_actions_count = 15
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
     logging.info(f'Verify that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+    assert actual_actions_count == expected_actions_count
 
     actions_page.load_more_actions()
-    sleep(2)
 
     expected_actions_count = 30
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
     logging.info(f'Verify that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+    assert actual_actions_count == expected_actions_count
 
     actions_page.load_more_actions()
-    sleep(2)
 
     expected_actions_count = 40
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
     logging.info(f'Verify that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+    assert actual_actions_count == expected_actions_count
+
+
+@pytest.mark.homework_solution
+def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page, home_page, login_page):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
+    actions.delete_all_actions(auth_header)
+
+    logging.info('Creating 5 past actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() - timedelta(days=7),
+            start_date=datetime.now() - timedelta(days=7, hours=1),
+            summary='past action'
+        )
+
+    logging.info('Creating 10 actions on current day.')
+    for number in range(10):
+        actions.create_action(auth_header, summary='current date')
+
+    logging.info('Creating 5 future actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() + timedelta(days=7, hours=1),
+            start_date=datetime.now() + timedelta(days=7),
+            summary='future action'
+        )
+
+    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page.navigate()
+
+    expected_actions_count = 15
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    actions_page.open_filter_by_filter_text("Start")
+    actions_page.move_calendar_widget_back('start')
+    actions_page.click_date('start', '21')
+    actions_page.click_date_filter_apply_button('start')
+
+    actions_page.open_filter_by_filter_text("End")
+    actions_page.move_calendar_widget_back('end')
+    actions_page.click_date('end', '27')
+    actions_page.click_date_filter_apply_button('end')
 
     sleep(5)

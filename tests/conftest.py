@@ -66,6 +66,7 @@ def driver(request):
     config.environment = request.config.getoption('--environment')
 
     _driver = get_driver(config.browser)
+    _driver.maximize_window()
 
     def _quit():
         _driver.quit()

@@ -119,6 +119,36 @@ def action_summary_by_position(position):
     }
 
 
+def actions_filter_by_filter_text(filter_text):
+    return {
+        'by': By.XPATH,
+        'value': f'//div[contains(@class, "actions-list-header")]//span[contains(text(), "{filter_text}")]//ancestor::span[contains(@class, "fn-popover__trigger")]'
+    }
+
+
+# Needed to add the end_or_start locator to the following three locators since the locator would otherwise find duplicate
+# locators for the start/end filters.
+def date_by_date_text(end_or_start, desired_date):
+    return {
+        'by': By.XPATH,
+        'value': f'//div[@id="fn-calendar-widget-{end_or_start}"]//div[contains(@class, "pmu-days")]//div[contains(@class, "pmu-button") and not(contains(@class, "pmu-not-in-month")) and text()="{desired_date}"]'
+    }
+
+
+def date_filter_apply_button(end_or_start):
+    return {
+        'by': By.XPATH,
+        'value': f'//div[@id="fn-calendar-widget-{end_or_start}"]//ancestor::div[contains(@class, "popover-content")]//button[contains(text(), "Apply")]'
+    }
+
+
+def date_filter_previous_next(end_or_start, previous_next):
+    return {
+        'by': By.CSS_SELECTOR,
+        'value': f'#fn-calendar-widget-{end_or_start} .pmu-{previous_next}'
+    }
+
+
 def delete_action_icon_by_position(position):
     return {
         'by': By.XPATH,
