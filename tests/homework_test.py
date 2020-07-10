@@ -577,13 +577,20 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
     assert actual_actions_count == expected_actions_count
 
     actions_page.open_filter_by_filter_text("Start")
-    actions_page.move_calendar_widget_back('start')
-    actions_page.click_date('start', '21')
+    # actions_page.move_calendar_widget_back('start')
+    actions_page.click_date('start', '1')
     actions_page.click_date_filter_apply_button('start')
 
     actions_page.open_filter_by_filter_text("End")
-    actions_page.move_calendar_widget_back('end')
-    actions_page.click_date('end', '27')
+    # actions_page.move_calendar_widget_back('end')
+    actions_page.click_date('end', '4') # TODO: This line of code is occasionally flaky. Please fix.
     actions_page.click_date_filter_apply_button('end')
 
-    sleep(5)
+    expected_actions_count = 5
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    expected_action_summaries = ['past action', 'past action', 'past action', 'past action', 'past action']
+    logging.info(f'Verify that the following action summaries are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
