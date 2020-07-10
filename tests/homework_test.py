@@ -595,7 +595,6 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
-@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July91!!!')
     actions.delete_all_actions(auth_header)
@@ -649,5 +648,63 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     assert actual_actions_count == expected_actions_count
 
     expected_action_summaries = ['current date'] * 10
+    logging.info(f'Verify that the following action summaries are visible: {expected_action_summaries}')
+    assert actions_page.visible_action_summaries == expected_action_summaries
+
+
+@pytest.mark.homework_solution
+def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_page, home_page, login_page):
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July91!!!')
+    actions.delete_all_actions(auth_header)
+
+    logging.info('Creating 5 past actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() - timedelta(days=7),
+            start_date=datetime.now() - timedelta(days=7, hours=1),
+            summary='past action'
+        )
+
+    logging.info('Creating 10 actions on current day.')
+    for number in range(10):
+        actions.create_action(auth_header, summary='current date')
+
+    logging.info('Creating 5 future actions.')
+    for number in range(5):
+        actions.create_action(
+            auth_header,
+            end_date=datetime.now() + timedelta(days=7, hours=1),
+            start_date=datetime.now() + timedelta(days=7),
+            summary='future action'
+        )
+
+    login_page.login('selenium.course@fiscalnote.com', 'July91!!!')
+
+    assert "Welcome" in home_page.welcome_message
+
+    actions_page.navigate()
+
+    expected_actions_count = 15
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    actions_page.open_filter_by_filter_text("Start")
+    # actions_page.move_calendar_widget_back('start')
+    actions_page.click_date('start', '12')
+    actions_page.click_date_filter_apply_button('start')
+
+    actions_page.open_filter_by_filter_text("End")
+    # actions_page.move_calendar_widget_back('end')
+    actions_page.click_date('end', '18') # TODO: This line of code is occasionally flaky. Please fix.
+    actions_page.click_date_filter_apply_button('end')
+
+    expected_actions_count = 5
+    actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
+    logging.info(f'Verify that {expected_actions_count} actions are visible.')
+    assert actual_actions_count == expected_actions_count
+
+    expected_action_summaries = ['future action'] * 5
     logging.info(f'Verify that the following action summaries are visible: {expected_action_summaries}')
     assert actions_page.visible_action_summaries == expected_action_summaries
