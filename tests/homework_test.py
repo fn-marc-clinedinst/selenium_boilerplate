@@ -540,7 +540,7 @@ def test_user_can_load_more_actions(actions_page, home_page, login_page):
 
 @pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
+    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July91!!!')
     actions.delete_all_actions(auth_header)
 
     logging.info('Creating 5 past actions.')
@@ -565,7 +565,7 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
             summary='future action'
         )
 
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+    login_page.login('selenium.course@fiscalnote.com', 'July91!!!')
 
     assert "Welcome" in home_page.welcome_message
 
