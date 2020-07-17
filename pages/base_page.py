@@ -78,11 +78,10 @@ class BasePage:
         seconds_waited = 0
         number_of_elements = 0
         while seconds_waited < timeout:
-            number_of_elements = len(self.find_visible_elements(locator))
+            number_of_elements = len(self.find_visible_elements(locator, timeout=1))
             if number_of_elements == expected_count:
                 return number_of_elements
             else:
-                sleep(1)
                 seconds_waited += 1
         return number_of_elements
 
