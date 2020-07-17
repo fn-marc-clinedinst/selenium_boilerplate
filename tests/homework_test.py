@@ -538,17 +538,27 @@ def test_user_can_load_more_actions(actions_page, home_page, login_page):
     assert actual_actions_count == expected_actions_count
 
 
-@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
     actions.delete_all_actions(auth_header)
+
+    now = datetime.now()
+
+    if now.month == 1:
+        # Set the start/end date to December 15th of previous year.
+        past_action_end_date = datetime(now.year - 1, 12, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year - 1, 12, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of previous month in the current year
+        past_action_end_date = datetime(now.year, now.month - 1, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year, now.month - 1, 15, 12, 0, 0)
 
     logging.info('Creating 5 past actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() - timedelta(days=7),
-            start_date=datetime.now() - timedelta(days=7, hours=1),
+            end_date=past_action_end_date,
+            start_date=past_action_start_date,
             summary='past action'
         )
 
@@ -556,12 +566,21 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
     for number in range(10):
         actions.create_action(auth_header, summary='current date')
 
+    if now.month == 12:
+        # Set the start/end date to January 15th of next year
+        future_action_end_date = datetime(now.year + 1, 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year + 1, 1, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of next month in current year
+        future_action_end_date = datetime(now.year, now.month + 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year, now.month + 1, 15, 12, 0, 0)
+
     logging.info('Creating 5 future actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() + timedelta(days=7, hours=1),
-            start_date=datetime.now() + timedelta(days=7),
+            end_date=future_action_end_date,
+            start_date=future_action_start_date,
             summary='future action'
         )
 
@@ -577,13 +596,13 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
     assert actual_actions_count == expected_actions_count
 
     actions_page.open_filter_by_filter_text("Start")
-    # actions_page.move_calendar_widget_back('start')
-    actions_page.click_date('start', '1')
+    actions_page.move_calendar_widget_back('start')
+    actions_page.click_date('start', 8)
     actions_page.click_date_filter_apply_button('start')
 
     actions_page.open_filter_by_filter_text("End")
-    # actions_page.move_calendar_widget_back('end')
-    actions_page.click_date('end', '4') # TODO: This line of code is occasionally flaky. Please fix.
+    actions_page.move_calendar_widget_back('end')
+    actions_page.click_date('end', 22) # TODO: This line of code is occasionally flaky. Please fix.
     actions_page.click_date_filter_apply_button('end')
 
     expected_actions_count = 5
@@ -600,12 +619,23 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
     actions.delete_all_actions(auth_header)
 
+    now = datetime.now()
+
+    if now.month == 1:
+        # Set the start/end date to December 15th of previous year.
+        past_action_end_date = datetime(now.year - 1, 12, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year - 1, 12, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of previous month in the current year
+        past_action_end_date = datetime(now.year, now.month - 1, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year, now.month - 1, 15, 12, 0, 0)
+
     logging.info('Creating 5 past actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() - timedelta(days=7),
-            start_date=datetime.now() - timedelta(days=7, hours=1),
+            end_date=past_action_end_date,
+            start_date=past_action_start_date,
             summary='past action'
         )
 
@@ -613,14 +643,25 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     for number in range(10):
         actions.create_action(auth_header, summary='current date')
 
+    if now.month == 12:
+        # Set the start/end date to January 15th of next year
+        future_action_end_date = datetime(now.year + 1, 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year + 1, 1, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of next month in current year
+        future_action_end_date = datetime(now.year, now.month + 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year, now.month + 1, 15, 12, 0, 0)
+
     logging.info('Creating 5 future actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() + timedelta(days=7, hours=1),
-            start_date=datetime.now() + timedelta(days=7),
+            end_date=future_action_end_date,
+            start_date=future_action_start_date,
             summary='future action'
         )
+
+    current_day = datetime.now().day
 
     login_page.login('selenium.course@fiscalnote.com', 'July171!')
 
@@ -634,13 +675,12 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     assert actual_actions_count == expected_actions_count
 
     actions_page.open_filter_by_filter_text("Start")
-    # actions_page.move_calendar_widget_back('start')
-    actions_page.click_date('start', '10')
+    actions_page.click_date('start', current_day)
     actions_page.click_date_filter_apply_button('start')
 
+    sleep(2) # Todo: Remove this sleep.
     actions_page.open_filter_by_filter_text("End")
-    # actions_page.move_calendar_widget_back('end')
-    actions_page.click_date('end', '10') # TODO: This line of code is occasionally flaky. Please fix.
+    actions_page.click_date('end', current_day) # TODO: This line of code is occasionally flaky. Please fix.
     actions_page.click_date_filter_apply_button('end')
 
     expected_actions_count = 10
@@ -653,16 +693,28 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
+@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
     actions.delete_all_actions(auth_header)
+
+    now = datetime.now()
+
+    if now.month == 1:
+        # Set the start/end date to December 15th of previous year.
+        past_action_end_date = datetime(now.year - 1, 12, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year - 1, 12, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of previous month in the current year
+        past_action_end_date = datetime(now.year, now.month - 1, 15, 13, 0, 0)
+        past_action_start_date = datetime(now.year, now.month - 1, 15, 12, 0, 0)
 
     logging.info('Creating 5 past actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() - timedelta(days=7),
-            start_date=datetime.now() - timedelta(days=7, hours=1),
+            end_date=past_action_end_date,
+            start_date=past_action_start_date,
             summary='past action'
         )
 
@@ -670,12 +722,21 @@ def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_pa
     for number in range(10):
         actions.create_action(auth_header, summary='current date')
 
+    if now.month == 12:
+        # Set the start/end date to January 15th of next year
+        future_action_end_date = datetime(now.year + 1, 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year + 1, 1, 15, 12, 0, 0)
+    else:
+        # Set the start/end date to 15th of next month in current year
+        future_action_end_date = datetime(now.year, now.month + 1, 15, 13, 0, 0)
+        future_action_start_date = datetime(now.year, now.month + 1, 15, 12, 0, 0)
+
     logging.info('Creating 5 future actions.')
     for number in range(5):
         actions.create_action(
             auth_header,
-            end_date=datetime.now() + timedelta(days=7, hours=1),
-            start_date=datetime.now() + timedelta(days=7),
+            end_date=future_action_end_date,
+            start_date=future_action_start_date,
             summary='future action'
         )
 
@@ -691,19 +752,21 @@ def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_pa
     assert actual_actions_count == expected_actions_count
 
     actions_page.open_filter_by_filter_text("Start")
-    # actions_page.move_calendar_widget_back('start')
-    actions_page.click_date('start', '12')
+    actions_page.move_calendar_widget_forward('start')
+    actions_page.click_date('start', 8)
     actions_page.click_date_filter_apply_button('start')
 
     actions_page.open_filter_by_filter_text("End")
-    # actions_page.move_calendar_widget_back('end')
-    actions_page.click_date('end', '18') # TODO: This line of code is occasionally flaky. Please fix.
+    actions_page.move_calendar_widget_forward('end')
+    actions_page.click_date('end', 22) # TODO: This line of code is occasionally flaky. Please fix.
     actions_page.click_date_filter_apply_button('end')
 
     expected_actions_count = 5
     actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
     logging.info(f'Verify that {expected_actions_count} actions are visible.')
     assert actual_actions_count == expected_actions_count
+
+    sleep(2)  # Todo: Remove this sleep
 
     expected_action_summaries = ['future action'] * 5
     logging.info(f'Verify that the following action summaries are visible: {expected_action_summaries}')
