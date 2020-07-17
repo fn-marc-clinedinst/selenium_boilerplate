@@ -538,6 +538,7 @@ def test_user_can_load_more_actions(actions_page, home_page, login_page):
     assert actual_actions_count == expected_actions_count
 
 
+@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
     actions.delete_all_actions(auth_header)
@@ -652,7 +653,6 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
-@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
     actions.delete_all_actions(auth_header)
