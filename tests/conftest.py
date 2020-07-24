@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from selenium import webdriver
@@ -76,6 +77,24 @@ def driver(request):
     return _driver
 
 
+@pytest.fixture(scope='session')
+def authenticated_driver(home_page, login_page):
+    login_page.login('another.user@fiscalnote.com', 'July241!')
+
+    assert "Welcome" in home_page.welcome_message
+
+
+@pytest.fixture(scope='session')
+def auth_header(driver):
+    ember_simple_auth = json.loads(driver.execute_script('return localStorage.getItem("ember_simple_auth:session");'))
+    user_email = ember_simple_auth['authenticated']['userEmail']
+    user_token = ember_simple_auth['authenticated']['userToken']
+
+    return {
+        'Authorization': f'Token user_token="{user_token}", user_email="{user_email}"'
+    }
+
+
 @pytest.fixture
 def actions_page(driver):
     return ActionsPage(driver)
@@ -86,12 +105,12 @@ def actions_summary_modal(driver):
     return ActionSummaryModal(driver)
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def home_page(driver):
     return HomePage(driver)
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def login_page(driver):
     return LoginPage(driver)
 
