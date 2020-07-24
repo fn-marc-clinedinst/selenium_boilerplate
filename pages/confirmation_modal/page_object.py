@@ -7,7 +7,7 @@ from pages.base_page import BasePage
 class ConfirmationModal(BasePage):
     @property
     def cancel_button(self):
-        return self.find_visible_element(locators.CANCEL_BUTTON)
+        return self.find_clickable_element(locators.CANCEL_BUTTON)
 
     @property
     def confirm_button(self):
