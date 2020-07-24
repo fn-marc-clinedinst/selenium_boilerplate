@@ -539,7 +539,7 @@ def test_user_can_load_more_actions(actions_page, home_page, login_page):
 
 
 def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
+    auth_header = authorization.get_authorization_header('another.user@fiscalnote.com', 'July241!')
     actions.delete_all_actions(auth_header)
 
     now = datetime.now()
@@ -584,7 +584,7 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
             summary='future action'
         )
 
-    login_page.login('selenium.course@fiscalnote.com', 'July171!')
+    login_page.login('another.user@fiscalnote.com', 'July241!')
 
     assert "Welcome" in home_page.welcome_message
 
@@ -616,7 +616,7 @@ def test_user_can_filter_by_start_and_end_date_to_find_past_actions(actions_page
 
 
 def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
+    auth_header = authorization.get_authorization_header('another.user@fiscalnote.com', 'July241!')
     actions.delete_all_actions(auth_header)
 
     now = datetime.now()
@@ -663,7 +663,7 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
 
     current_day = datetime.now().day
 
-    login_page.login('selenium.course@fiscalnote.com', 'July171!')
+    login_page.login('another.user@fiscalnote.com', 'July241!')
 
     assert "Welcome" in home_page.welcome_message
 
@@ -693,9 +693,8 @@ def test_user_can_filter_by_start_and_end_date_to_find_actions_from_today(action
     assert actions_page.visible_action_summaries == expected_action_summaries
 
 
-@pytest.mark.homework_solution
 def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_page, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'July171!')
+    auth_header = authorization.get_authorization_header('another.user@fiscalnote.com', 'July241!')
     actions.delete_all_actions(auth_header)
 
     now = datetime.now()
@@ -740,7 +739,7 @@ def test_user_can_filter_by_start_and_end_date_to_find_future_actions(actions_pa
             summary='future action'
         )
 
-    login_page.login('selenium.course@fiscalnote.com', 'July171!')
+    login_page.login('another.user@fiscalnote.com', 'July241!')
 
     assert "Welcome" in home_page.welcome_message
 
