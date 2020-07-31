@@ -1,67 +1,34 @@
 import logging
 import pytest
-import requests
 
 from datetime import datetime, timedelta
 from random import choice
-from selenium.webdriver.common.by import By
 from time import sleep
 
-from api import actions, authorization, current_user
+from api import actions, authorization
 
 from pages import ActionModal, ActionsPage, ConfirmationModal, HomePage, LoginPage, TopSearch
+from utilities.helpers import get_date, get_timestamp
 from utilities.validators import date_is_valid, time_is_valid
-from utilities.wait import wait_for_element_to_be_visible
 
 
-def delete_icon_by_action_summary(action_summary):
-    return {
-        'by': By.XPATH,
-        'value': f'//p[text()="{action_summary}"]//ancestor::tr//i[@class="ion-trash-b"]'
-    }
+@pytest.mark.debug
+class TestActionsCRUD:
+    @pytest.fixture(autouse=True, scope='session')
+    def test_set_up_and_tear_down_session(self, authenticated_driver, auth_header):
+        actions.delete_all_actions(auth_header)
 
+    def test_action_counts_for_empty_state(self, actions_page):
+        actions_page.navigate()
 
-def new_action_summary(summary_text):
-    return {
-        'by': By.XPATH,
-        'value': f'//td[contains(@class, "actions-row__summary-col")]//p[text()="{summary_text}"]'
-    }
+        assert actions_page.total_actions_count == 0
+        assert actions_page.actions_this_week_count == 0
+        assert actions_page.actions_this_month_count == 0
 
+        assert "No actions yet." in actions_page.empty_state_help_text
+        assert "Create one to record meetings, calls, and other actions to share past and future activity with your team." in actions_page.empty_state_help_text
 
-def get_random_number():
-    return choice([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-
-
-def get_date():
-    date = datetime.now()
-
-    return f'{date.month}/{date.day}/{date.year}'
-
-
-def get_timestamp():
-    date = datetime.now()
-
-    return f'{date.hour}:{date.minute}:{date.second}'
-
-
-def test_action_counts_for_empty_state(driver):
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
-
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
-
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-
-    assert actions_page.total_actions_count == 0
-    assert actions_page.actions_this_week_count == 0
-    assert actions_page.actions_this_month_count == 0
-
-    assert "No actions yet." in actions_page.empty_state_help_text
-    assert "Create one to record meetings, calls, and other actions to share past and future activity with your team." in actions_page.empty_state_help_text
-
-    assert actions_page.empty_state_add_action_button.is_displayed()
+        assert actions_page.empty_state_add_action_button.is_displayed()
 
 
 def test_user_sees_correct_default_state_for_action_modal(driver):
@@ -448,62 +415,6 @@ def test_user_can_search_for_actions_by_action_summary(driver):
     logging.info(f'Verifying that the following actions are visible: {expected_action_summaries}')
     assert actions_page.visible_action_summaries == expected_action_summaries
 
-
-def test_user_can_open_actions_summary_modal(actions_page, actions_summary_modal, home_page, login_page):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
-    actions.delete_all_actions(auth_header)
-
-    logging.info('Creating 5 past actions.')
-    for number in range(5):
-        actions.create_action(
-            auth_header,
-            end_date=datetime.now() - timedelta(days=7),
-            start_date=datetime.now() - timedelta(days=7, hours=1),
-            summary='past action'
-        )
-
-    logging.info('Creating 10 actions on current day.')
-    for number in range(10):
-        actions.create_action(auth_header, summary='current date')
-
-    logging.info('Creating 5 future actions.')
-    for number in range(5):
-        actions.create_action(
-            auth_header,
-            end_date=datetime.now() + timedelta(days=7, hours=1),
-            start_date=datetime.now() + timedelta(days=7),
-            summary='future action'
-        )
-
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
-
-    assert "Welcome" in home_page.welcome_message
-
-    actions_page.navigate()
-    actions_page.click_see_actions_summary_link()
-
-    expected_total_actions_count = 20
-    logging.info(f'Verify that "Total Actions" equals {expected_total_actions_count}')
-    assert actions_summary_modal.total_actions == expected_total_actions_count
-
-    logging.info(f'Verify that "Total Actions" in the modal matches what is on the page.')
-    assert actions_summary_modal.total_actions == actions_page.total_actions_count
-
-    expected_actions_this_month = 20
-    logging.info(f'Verify that "Actions This Month" equals {expected_actions_this_month}')
-    assert actions_summary_modal.actions_this_month == expected_total_actions_count
-
-    logging.info(f'Verify that "Actions This Month" in the modal matches what is on the page.')
-    assert actions_summary_modal.actions_this_month == actions_page.actions_this_month_count
-
-    expected_actions_this_week = 10
-    logging.info(f'Verify that "Actions This Week" equals {expected_actions_this_week}')
-    assert actions_summary_modal.actions_this_week == expected_actions_this_week
-
-    logging.info(f'Verify that "Actions This Week" in the modal matches what is on the page.')
-    assert actions_summary_modal.actions_this_week == actions_page.actions_this_week_count
-
-
 def test_user_can_load_more_actions(actions_page, home_page, login_page):
     auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
     actions.delete_all_actions(auth_header)
@@ -538,8 +449,7 @@ def test_user_can_load_more_actions(actions_page, home_page, login_page):
     assert actual_actions_count == expected_actions_count
 
 
-@pytest.mark.debug
-class TestStartAndEndDateFilters:
+class TestActionSummaryModalAndStartAndEndDateFilters:
     @pytest.fixture(autouse=True, scope='session')
     def test_set_up_and_tear_down_session(self, authenticated_driver, auth_header):
         actions.delete_all_actions(auth_header)
@@ -594,6 +504,30 @@ class TestStartAndEndDateFilters:
         actual_actions_count = actions_page.wait_for_visible_actions_count_to_equal(expected_actions_count)
         logging.info(f'Verify that {expected_actions_count} actions are visible.')
         assert actual_actions_count == expected_actions_count
+
+    def test_user_can_open_actions_summary_modal(self, actions_page, actions_summary_modal):
+        actions_page.click_see_actions_summary_link()
+
+        expected_total_actions_count = 20
+        logging.info(f'Verify that "Total Actions" equals {expected_total_actions_count}')
+        assert actions_summary_modal.total_actions == expected_total_actions_count
+
+        logging.info(f'Verify that "Total Actions" in the modal matches what is on the page.')
+        assert actions_summary_modal.total_actions == actions_page.total_actions_count
+
+        expected_actions_this_month = 10
+        logging.info(f'Verify that "Actions This Month" equals {expected_actions_this_month}')
+        assert actions_summary_modal.actions_this_month == expected_actions_this_month
+
+        logging.info(f'Verify that "Actions This Month" in the modal matches what is on the page.')
+        assert actions_summary_modal.actions_this_month == actions_page.actions_this_month_count
+
+        expected_actions_this_week = 10
+        logging.info(f'Verify that "Actions This Week" equals {expected_actions_this_week}')
+        assert actions_summary_modal.actions_this_week == expected_actions_this_week
+
+        logging.info(f'Verify that "Actions This Week" in the modal matches what is on the page.')
+        assert actions_summary_modal.actions_this_week == actions_page.actions_this_week_count
 
     def test_user_can_filter_by_start_and_end_date_to_find_past_actions(self, actions_page):
         actions_page.open_filter_by_filter_text("Start")

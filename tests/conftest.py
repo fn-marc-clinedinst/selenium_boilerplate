@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 
 from selenium import webdriver
@@ -79,7 +80,7 @@ def driver(request):
 
 @pytest.fixture(scope='session')
 def authenticated_driver(home_page, login_page):
-    login_page.login('another.user@fiscalnote.com', 'July241!')
+    login_page.login(os.getenv('ENV_USERNAME'), os.getenv('ENV_PASSWORD'))
 
     assert "Welcome" in home_page.welcome_message
 
