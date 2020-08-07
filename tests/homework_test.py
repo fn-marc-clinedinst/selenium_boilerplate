@@ -1,12 +1,11 @@
 import logging
 import pytest
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from random import choice
 from time import sleep
 
-from api import actions, authorization
-
+from api import actions, authorization, current_user
 from pages import ActionModal, ActionsPage, ConfirmationModal, HomePage, LoginPage, TopSearch
 from utilities.helpers import get_date, get_timestamp
 from utilities.validators import date_is_valid, time_is_valid
@@ -16,11 +15,25 @@ from utilities.validators import date_is_valid, time_is_valid
 class TestActionsCRUD:
     @pytest.fixture(autouse=True, scope='session')
     def test_set_up_and_tear_down_session(self, authenticated_driver, auth_header):
+        logging.info("Before all test cases run.")
         actions.delete_all_actions(auth_header)
 
-    def test_action_counts_for_empty_state(self, actions_page):
+        # run the whole test suite
+        yield
+
+        logging.info("After all test cases run.")
+
+    @pytest.fixture(autouse=True)
+    def test_set_up_and_tear_down_test_function(self, actions_page):
+        logging.info("Before each test case runs.")
         actions_page.navigate()
 
+        # run an individual test case
+        yield
+
+        logging.info("After each test case runs.")
+
+    def test_action_counts_for_empty_state(self, actions_page):
         logging.info("Verify that the 'Total Actions' count equals 0.")
         assert actions_page.total_actions_count == 0
 
@@ -41,102 +54,89 @@ class TestActionsCRUD:
         logging.info("Verify that the empty state 'Add Action' button is displayed.")
         assert actions_page.empty_state_add_action_button.is_displayed()
 
+    def test_user_sees_correct_default_state_for_action_modal(self, action_modal, actions_page, auth_header):
+        actions_page.click_empty_state_add_action_button()
 
-def test_user_sees_correct_default_state_for_action_modal(driver):
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+        logging.info("Verify that the action modal is displayed.")
+        assert action_modal.is_displayed
 
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
+        logging.info("Verify that that the action modal has the header 'Add Action.'")
+        assert action_modal.modal_header_text == "Add Action"
 
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-    actions_page.click_empty_state_add_action_button()
+        logging.info("Verify that the 'Start Date' in the action modal is valid.")
+        assert date_is_valid(action_modal.start_date_value)
 
-    action_modal = ActionModal(driver)
+        logging.info("Verify that the 'Start Time' in the action modal is valid.")
+        assert time_is_valid(action_modal.start_time_value)
 
-    assert action_modal.is_displayed
+        logging.info("Verify that the 'End Date' in the action modal is valid.")
+        assert date_is_valid(action_modal.end_date_value)
 
-    assert action_modal.modal_header_text == "Add Action"
+        logging.info("Verify that the 'End Time' in the action modal is valid.")
+        assert time_is_valid(action_modal.end_time_value)
 
-    assert date_is_valid(action_modal.start_date_value)
+        logging.info("Verify that the 'Action Type' is 'Meeting.'")
+        assert action_modal.selected_action_type == "Meeting"
 
-    assert time_is_valid(action_modal.start_time_value)
+        user = current_user.get_current_user(auth_header)
+        user_full_name = f"{user['first_name']} {user['last_name']}"
 
-    assert date_is_valid(action_modal.end_date_value)
+        logging.info(f"Verify that '{user_full_name}' is added as an attendee.")
+        assert action_modal.added_attendees == [user_full_name]
 
-    assert time_is_valid(action_modal.end_time_value)
+        logging.info("Verify that there are no linked items.")
+        assert action_modal.added_linked_items == []
 
-    assert action_modal.selected_action_type == "Meeting"
+        logging.info("Verify that there are no added labels.")
+        assert action_modal.added_labels == []
 
-    assert action_modal.added_attendees == ['Selenium Course']
+        logging.info("Verify that there are no added issues.")
+        assert action_modal.added_issues == []
 
-    assert action_modal.added_linked_items == []
+        logging.info("Verify that there is no summary.")
+        assert action_modal.current_summary_text == ''
 
-    assert action_modal.added_labels == []
+    def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(
+        self,
+        action_modal,
+        actions_page,
+        confirmation_modal
+    ):
+        actions_page.click_empty_state_add_action_button()
+        action_modal.click_cancel_button()
+        confirmation_modal.click_cancel_button()
 
-    assert action_modal.added_issues == []
+        logging.info("Verify that the action modal is visible.")
+        assert action_modal.is_displayed
 
-    assert action_modal.current_summary_text == ''
+        action_modal.click_cancel_button()
+        confirmation_modal.click_confirm_button()
 
+        logging.info("Verify that the action modal is not visible.")
+        assert action_modal.is_not_displayed
 
-def test_user_can_open_actions_modal_with_empty_state_add_action_button_and_close_it_with_cancel_button(driver):
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+    def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_with_x_icon(
+        self,
+        action_modal,
+        actions_page,
+        confirmation_modal
+    ):
+        actions_page.click_add_action_button()
 
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
+        logging.info('Verifying Action Modal is visible.')
+        assert action_modal.is_displayed
 
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-    actions_page.click_empty_state_add_action_button()
+        action_modal.click_close_icon()
+        confirmation_modal.click_cancel_button()
 
-    action_modal = ActionModal(driver)
-    action_modal.click_cancel_button()
+        logging.info('Verifying Action Modal is still visible.')
+        assert action_modal.is_displayed
 
-    confirmation_modal = ConfirmationModal(driver)
-    confirmation_modal.click_cancel_button()
+        action_modal.click_close_icon()
+        confirmation_modal.click_confirm_button()
 
-    assert action_modal.is_displayed
-
-    action_modal.click_cancel_button()
-    confirmation_modal.click_confirm_button()
-
-    assert action_modal.is_not_displayed
-
-
-def test_user_can_open_actions_modal_with_main_add_action_button_and_close_it_with_x_icon(driver):
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
-
-    home_page = HomePage(driver)
-
-    welcome_message = "Welcome, Selenium"
-    logging.info(f'Verifying that the text "{welcome_message}" appears in the welcome message on the Home Page.')
-    assert welcome_message in home_page.welcome_message
-
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-    actions_page.click_add_action_button()
-
-    action_modal = ActionModal(driver)
-
-    logging.info('Verifying Action Modal is visible.')
-    assert action_modal.is_displayed
-
-    action_modal.click_close_icon()
-
-    confirmation_modal = ConfirmationModal(driver)
-    confirmation_modal.click_cancel_button()
-
-    logging.info('Verifying Action Modal is still visible.')
-    assert action_modal.is_displayed
-
-    action_modal.click_close_icon()
-    confirmation_modal.click_confirm_button()
-
-    logging.info('Verifying Action Modal is no longer visible.')
-    assert action_modal.is_not_displayed
+        logging.info('Verifying Action Modal is no longer visible.')
+        assert action_modal.is_not_displayed
 
 
 def test_user_can_create_a_new_action(driver):

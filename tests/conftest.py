@@ -5,7 +5,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from pages import ActionsPage, ActionSummaryModal, HomePage, LoginPage
+from pages import ActionModal, ActionsPage, ActionSummaryModal, ConfirmationModal, HomePage, LoginPage
 from tests import config
 
 
@@ -97,6 +97,11 @@ def auth_header(driver):
 
 
 @pytest.fixture
+def action_modal(driver):
+    return ActionModal(driver)
+
+
+@pytest.fixture
 def actions_page(driver):
     return ActionsPage(driver)
 
@@ -104,6 +109,11 @@ def actions_page(driver):
 @pytest.fixture
 def actions_summary_modal(driver):
     return ActionSummaryModal(driver)
+
+
+@pytest.fixture
+def confirmation_modal(driver):
+    return ConfirmationModal(driver)
 
 
 @pytest.fixture(scope='session')
