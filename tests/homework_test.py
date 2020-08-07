@@ -21,13 +21,24 @@ class TestActionsCRUD:
     def test_action_counts_for_empty_state(self, actions_page):
         actions_page.navigate()
 
+        logging.info("Verify that the 'Total Actions' count equals 0.")
         assert actions_page.total_actions_count == 0
+
+        logging.info("Verify that the 'Actions this Week' count equals 0.")
         assert actions_page.actions_this_week_count == 0
+
+        logging.info("Verify that the 'Actions this Month' count equals 0.")
         assert actions_page.actions_this_month_count == 0
 
-        assert "No actions yet." in actions_page.empty_state_help_text
-        assert "Create one to record meetings, calls, and other actions to share past and future activity with your team." in actions_page.empty_state_help_text
+        no_actions_message = "No actions yet."
+        create_action_message = (
+            "Create one to record meetings, calls, and other actions to share past and future activity with your team."
+        )
+        logging.info("Verify that the correct help text appears on the screen.")
+        assert no_actions_message in actions_page.empty_state_help_text
+        assert create_action_message in actions_page.empty_state_help_text
 
+        logging.info("Verify that the empty state 'Add Action' button is displayed.")
         assert actions_page.empty_state_add_action_button.is_displayed()
 
 
