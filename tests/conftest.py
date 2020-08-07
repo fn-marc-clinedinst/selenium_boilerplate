@@ -33,7 +33,7 @@ def pytest_addoption(parser):
 
 
 def get_driver(desired_browser):
-    SELENIUM_GRID_IP_ADDRESS = '206.189.181.225'
+    SELENIUM_GRID_IP_ADDRESS = 'selenium-grid.mgmt.fiscalnote.com'
 
     if desired_browser == 'chrome':
         driver = webdriver.Remote(
