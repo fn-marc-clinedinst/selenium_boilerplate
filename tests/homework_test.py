@@ -11,7 +11,6 @@ from utilities.helpers import get_date, get_timestamp
 from utilities.validators import date_is_valid, time_is_valid
 
 
-@pytest.mark.debug
 class TestActionsCRUD:
     @pytest.fixture(autouse=True, scope='session')
     def test_set_up_and_tear_down_session(self, authenticated_driver, auth_header):
@@ -138,166 +137,120 @@ class TestActionsCRUD:
         logging.info('Verifying Action Modal is no longer visible.')
         assert action_modal.is_not_displayed
 
+    def test_user_can_create_a_new_action(self, action_modal, actions_page, auth_header):
+        actions_page.click_add_action_button()
 
-def test_user_can_create_a_new_action(driver):
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'not_my_real_password')
+        action_modal.enter_start_date('8/14/2019')
+        action_modal.enter_start_time('6:00am')
+        action_modal.enter_end_date('8/14/2019')
+        action_modal.enter_end_time('5:00pm')
+        action_modal.set_action_type('Phone Call')
+        action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
+        action_modal.add_labels(('agriculture', 'farming', 'welfare'))
+        action_modal.add_issue('Agriculture')
 
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
+        action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
+        action_modal.add_summary(action_summary_text)
 
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-    actions_page.click_add_action_button()
+        action_modal.click_save_button()
 
-    action_modal = ActionModal(driver)
-    action_modal.enter_start_date('8/14/2019')
-    action_modal.enter_start_time('6:00am')
-    action_modal.enter_end_date('8/14/2019')
-    action_modal.enter_end_time('5:00pm')
-    action_modal.set_action_type('Phone Call')
-    action_modal.add_linked_item('US HR 1478', 'US - HR 1478')
-    action_modal.add_labels(('agriculture', 'farming', 'welfare'))
-    action_modal.add_issue('Agriculture')
+        expected_action_1_start = "Aug 14, 2019 6:00 AM"
+        logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
+        assert actions_page.get_action_start_by_position(1) == expected_action_1_start
 
-    action_summary_text = f'{get_date()} {get_timestamp()} - This is my summary text.'
-    action_modal.add_summary(action_summary_text)
+        expected_action_1_end = "Aug 14, 2019 5:00 PM"
+        logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
+        assert actions_page.get_action_end_by_position(1) == expected_action_1_end
 
-    action_modal.click_save_button()
+        user = current_user.get_current_user(auth_header)
+        user_full_name = f"{user['first_name']} {user['last_name']}"
 
-    expected_action_1_start = "Mar 27, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 1 equals "{expected_action_1_start}"')
-    assert actions_page.get_action_start_by_position(1) == expected_action_1_start
+        expected_creator = user_full_name
+        logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
+        assert actions_page.get_action_creator_by_position(1) == expected_creator
 
-    expected_action_1_end = "Mar 27, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 1 equals "{expected_action_1_end}"')
-    assert actions_page.get_action_end_by_position(1) == expected_action_1_end
+        expected_attendees = [user_full_name]
+        logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
+        assert actions_page.get_action_attendees_by_position(1) == expected_attendees
 
-    expected_action_2_start = "Mar 27, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 2 equals "{expected_action_2_start}"')
-    assert actions_page.get_action_start_by_position(2) == expected_action_2_start
+        expected_issues = ['Agriculture']
+        logging.info(f'Verifying that the "Issues" value for the action in position 1 equals "{expected_issues}"')
+        assert actions_page.get_action_issues_by_position(1) == expected_issues
 
-    expected_action_2_end = "Mar 27, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 2 equals "{expected_action_2_end}"')
-    assert actions_page.get_action_end_by_position(2) == expected_action_2_end
+        logging.info(f'Verifying that the "Summary" value for the action in position 1 equals "{action_summary_text}"')
+        assert actions_page.get_action_summary_by_position(1) == action_summary_text
 
-    expected_action_3_start = "Mar 4, 2020 2:08 PM"
-    logging.info(f'Verifying that the "Start" value for the action in position 3 equals "{expected_action_3_start}"')
-    assert actions_page.get_action_start_by_position(3) == expected_action_3_start
+    def test_user_can_delete_action(self, actions_page, confirmation_modal, auth_header):
+        actions.delete_all_actions(auth_header)
+        actions.create_action(auth_header, summary='This action needs to be deleted.')
 
-    expected_action_3_end = "Mar 5, 2020 3:08 PM"
-    logging.info(f'Verifying that the "End" value for the action in position 3 equals "{expected_action_3_end}"')
-    assert actions_page.get_action_end_by_position(3) == expected_action_3_end
+        actions_page.navigate()
 
-    expected_creator = 'Tem Automation'
-    logging.info(f'Verifying that the "Creator" value for the action in position 1 equals "{expected_creator}"')
-    assert actions_page.get_action_creator_by_position(1) == expected_creator
+        expected_actions_count = 1
+        logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+        assert actions_page.visible_actions_count == expected_actions_count
 
-    expected_attendees = ['Herm Automation', 'Selenium Course', 'Tem Automation']
-    logging.info(f'Verifying that the "Attendees" value for the action in position 1 equals "{expected_attendees}"')
-    assert actions_page.get_action_attendees_by_position(1) == expected_attendees
+        actions_page.click_delete_action_icon_by_position(1)
 
-    expected_issues = ['Agriculture', 'Farming', 'Welfare']
-    logging.info(f'Verifying that the "Issues" value for the action in position 1 equals "{expected_issues}"')
-    assert actions_page.get_action_issues_by_position(1) == expected_issues
+        logging.info('Verifying that the "Delete Action" modal is visible.')
+        assert confirmation_modal.is_displayed
+        assert confirmation_modal.modal_title == 'Delete Action'
 
-    expected_summary = 'Edit summary and find the position'
-    logging.info(f'Verifying that the "Summary" value for the action in position 1 equals "{expected_summary}"')
-    assert actions_page.get_action_summary_by_position(1) == expected_summary
+        confirmation_modal.click_cancel_button()
 
+        logging.info('Verifying that the "Delete Action" modal is not visible.')
+        assert confirmation_modal.is_not_displayed
 
-def test_user_can_delete_action(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
-    actions.delete_all_actions(auth_header)
-    actions.create_action(auth_header, summary='This action needs to be deleted.')
+        logging.info('Verifying that the action in position 1 has a summary of "This action needs to be deleted."')
+        assert actions_page.get_action_summary_by_position(1) == 'This action needs to be deleted.'
 
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
+        actions_page.click_delete_action_icon_by_position(1)
+        confirmation_modal.click_ok_button()
 
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
+        expected_actions_count = 0
+        logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+        assert actions_page.visible_actions_count == expected_actions_count
 
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
+    @pytest.mark.debug
+    def test_user_can_batch_delete_actions(self, actions_page, auth_header, delete_action_modal):
+        actions.delete_all_actions(auth_header)
 
-    expected_actions_count = 1
-    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+        for number in range(1, 11):
+            actions.create_action(auth_header, summary=f'Action #{number}')
 
-    actions_page.click_delete_action_icon_by_position(1)
+        actions_page.navigate()
 
-    confirmation_modal = ConfirmationModal(driver)
+        expected_actions_count = 10
+        logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+        assert actions_page.visible_actions_count == expected_actions_count
 
-    logging.info('Verifying that the "Delete Action" modal is visible.')
-    assert confirmation_modal.is_displayed
-    assert confirmation_modal.modal_title == 'Delete Action'
+        actions_page.select_all_actions_on_current_page()
 
-    confirmation_modal.click_cancel_button()
+        logging.info('Verifying that 10 actions are selected.')
+        assert actions_page.selected_count == '10 Selected'
 
-    logging.info('Verifying that the "Delete Action" modal is not visible.')
-    assert confirmation_modal.is_not_displayed
+        actions_page.click_delete_button()
+        delete_action_modal.click_cancel_button()
 
-    logging.info('Verifying that the action in position 1 has a summary of "This action needs to be deleted."')
-    assert actions_page.get_action_summary_by_position(1) == 'This action needs to be deleted.'
+        actions_page.click_delete_button()
+        delete_action_modal.click_ok_button()
 
-    actions_page.click_delete_action_icon_by_position(1)
-    confirmation_modal.click_ok_button()
+        expected_actions_count = 0
+        actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+        logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+        assert expected_actions_count == actual_actions_count
 
-    expected_actions_count = 0
-    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+        logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+        assert actions_page.visible_actions_count == expected_actions_count
 
+        actions_page.navigate()
 
-def test_user_can_batch_delete_actions(driver):
-    auth_header = authorization.get_authorization_header('selenium.course@fiscalnote.com', 'not_my_real_password')
-    actions.delete_all_actions(auth_header)
+        actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
+        logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
+        assert expected_actions_count == actual_actions_count
 
-    for number in range(1, 11):
-        actions.create_action(auth_header, summary=f'Action #{number}')
-
-    login_page = LoginPage(driver)
-    login_page.login('selenium.course@fiscalnote.com', 'June121!!!')
-
-    home_page = HomePage(driver)
-    assert "Welcome" in home_page.welcome_message
-
-    actions_page = ActionsPage(driver)
-    actions_page.navigate()
-
-    expected_actions_count = 10
-    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
-
-    actions_page.select_all_actions_on_current_page()
-
-    logging.info('Verifying that 10 actions are selected.')
-    assert actions_page.selected_count == '10 Selected'
-
-    actions_page.click_delete_button()
-
-    confirmation_modal = ConfirmationModal(driver)
-    confirmation_modal.click_cancel_button()
-
-    actions_page.click_delete_button()
-
-    confirmation_modal.click_ok_button()
-
-    expected_actions_count = 0
-    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
-    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
-    assert expected_actions_count == actual_actions_count
-
-    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
-
-    driver.refresh()
-
-    actual_actions_count = actions_page.wait_for_total_actions_count_to_equal(expected_actions_count)
-    logging.info(f'Verify that the "Total Actions" count equals {expected_actions_count}.')
-    assert expected_actions_count == actual_actions_count
-
-    logging.info(f'Verifying that {expected_actions_count} actions are visible.')
-    assert actions_page.visible_actions_count == expected_actions_count
+        logging.info(f'Verifying that {expected_actions_count} actions are visible.')
+        assert actions_page.visible_actions_count == expected_actions_count
 
 
 def test_user_can_batch_delete_individual_actions(driver):
