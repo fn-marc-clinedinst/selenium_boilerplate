@@ -5,7 +5,16 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from pages import ActionModal, ActionsPage, ActionSummaryModal, ConfirmationModal, DeleteActionModal, HomePage, LoginPage
+from pages import (
+    ActionModal,
+    ActionsPage,
+    ActionSummaryModal,
+    ConfirmationModal,
+    DeleteActionModal,
+    HomePage,
+    LoginPage,
+    TopSearch
+)
 from tests import config
 
 
@@ -131,3 +140,6 @@ def login_page(driver):
     return LoginPage(driver)
 
 
+@pytest.fixture
+def top_search(driver):
+    return TopSearch(driver)
