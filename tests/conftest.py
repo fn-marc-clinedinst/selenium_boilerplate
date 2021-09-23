@@ -1,9 +1,10 @@
 import pytest
+import logging
 
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from pages import ActionsPage, ActionSummaryModal, HomePage, LoginPage
+from pages import ActionsPage, ActionModal, ActionSummaryModal, ConfirmationModal, HomePage, LoginPage, TopSearch
 from tests import config
 
 
@@ -76,6 +77,13 @@ def driver(request):
     return _driver
 
 
+@pytest.fixture(scope='session')
+def actions_test_fixture():
+    logging.info(f'before test')
+    yield
+    logging.info(f'after test')
+
+
 @pytest.fixture
 def actions_page(driver):
     return ActionsPage(driver)
@@ -84,6 +92,11 @@ def actions_page(driver):
 @pytest.fixture
 def actions_summary_modal(driver):
     return ActionSummaryModal(driver)
+
+
+@pytest.fixture
+def confirmation_modal(driver):
+    return ConfirmationModal(driver)
 
 
 @pytest.fixture
@@ -96,3 +109,11 @@ def login_page(driver):
     return LoginPage(driver)
 
 
+@pytest.fixture
+def action_modal(driver):
+    return ActionModal(driver)
+
+
+@pytest.fixture
+def top_search(driver):
+    return TopSearch(driver)

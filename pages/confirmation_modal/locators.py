@@ -1,8 +1,8 @@
 from selenium.webdriver.common.by import By
 
 CANCEL_BUTTON = {
-    'by': By.CSS_SELECTOR,
-    'value': '.modal-footer .btn-default'
+    'by': By.XPATH,
+    'value': "//div[@class='modal-footer']//button[@class='btn btn-default'][contains(text(),'Cancel')]"
 }
 
 CONFIRM_BUTTON = {

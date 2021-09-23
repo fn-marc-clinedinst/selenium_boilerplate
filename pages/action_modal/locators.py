@@ -11,8 +11,8 @@ CANCEL_BUTTON = {
 }
 
 CLOSE_ICON = {
-    'by': By.CSS_SELECTOR,
-    'value': '.modal-header .close'
+    'by': By.XPATH,
+    'value': "//div[@class='modal-header']//button[@class='close'][contains(text(),'×')]"
 }
 
 END_DATE = {

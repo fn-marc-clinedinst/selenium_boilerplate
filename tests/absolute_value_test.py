@@ -6,7 +6,7 @@
     >>> absolute_value(10)
     10
     >>> absolute_value(-10)
-    10
+    10f
     >>> absolute_value(0)
     0
 
